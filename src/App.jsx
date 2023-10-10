@@ -1,21 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
+import Sidebar from "./components/sidebar/sidebar";
+
 
 function App() {
-  const [likes, setLikes] = useState(0);
-  
-  function increment() {
-    setLikes(likes + 1);
-  }
-
-  function decrement() {
-    setLikes(likes - 1);
-  }
   
   return (
     <div className="App">
-      <h1>{likes}</h1>
-      <button onClick={increment}>Inc</button>
-      <button onClick={decrement}>Dec</button>
+      <Sidebar />
+      <main className="content">
+        {/* Содержимое основной части приложения */}
+      </main>
     </div>);  
 }
 
