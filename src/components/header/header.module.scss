@@ -1,0 +1,37 @@
+@import '../../styles/abstracts/constants';
+
+.header {
+  display: flex;
+  height: 28px;
+  border-bottom: 1px solid black;
+  user-select: none;
+  .title {
+    flex-grow: 1;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+  }
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-basis: 78px;
+  font-size: 25px;
+  margin-bottom: 5px;
+  .max {
+    width: 33%;
+    img {
+      width: 18px;
+    }
+  }
+
+  > * {
+    text-align: center;
+    width: 33%;
+    &:hover {
+      cursor: pointer;
+      background: $tertiary-color;
+    }
+  }
+}

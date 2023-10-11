@@ -1,0 +1,71 @@
+@import '../../styles/abstracts/constants';
+
+$burger-side: 35px;
+
+
+.burgerButton {
+  cursor: pointer;
+
+  width: $burger-side;
+  height: $burger-side;
+
+  position: relative;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+}
+
+.burger {
+  height: 3px;
+  width: 100%;
+  position: absolute;
+  top: calc(50% - 3px);
+  border-radius: 4px;
+  background: $primary-color;
+  
+  &::after, &::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    height: 3px;
+    width: 100%;
+    background: $primary-color;
+    border-radius: 4px;
+  }
+
+  &::before {
+    bottom: 8px;
+    top: auto;
+  }
+}
+
+.sidebar {
+  min-width: 200px;
+  max-width: 240px;
+  width: 20%;
+  height: 100%;
+
+  position: fixed;
+  top: 0;
+  left: -250px;
+
+  background-color: $secondary-color;
+  color: #fff;
+
+  overflow-y: auto;
+  transition: left 0.3s;
+  &.open {
+    left: 0;
+  }
+}
+
+.listContainer {
+  width: 100%;
+  height: 100%;
+  padding: 35% 15% 10% 20px;
+  
+  li {
+    margin: 10px 0;
+    color: $primary-color;
+  }
+}

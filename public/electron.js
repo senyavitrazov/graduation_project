@@ -1,19 +1,23 @@
 const path = require('path');
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const isDev = app.isPackaged ? false : require('electron-is-dev'); 
 
-function createWindow() {
-  const win = new BrowserWindow({
+let win;
+
+async function createWindow() {
+  win = new BrowserWindow({
     width: 1920,
+    minWidth: 960,
+    minHeight: 540,
     height: 1080,
     resizable: true,
-    webPreferences: {
-      nodeIntegration: true,
-    },
-    titleBarStyle: 'hidden',
     titleBarOverlay: true,
     title: 'СОДПП',
     frame: false,
+    webPreferences: {
+      nodeIntegration: true,
+      preload: path.join(__dirname, "preload.js"),
+    },
   });
   win.loadURL(
       isDev
@@ -22,7 +26,7 @@ function createWindow() {
   );
 }
 
-app.whenReady().then(createWindow);
+app.on("ready", createWindow);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -36,3 +40,10 @@ app.on('activate', () => {
   }
 });
 
+ipcMain.on('toMain', (event, data) => {
+  if (data.action === 'minimize') win.minimize();
+  if (data.action === 'close') win.close();
+  if (data.action === 'maximize') {
+    win.isMaximized() ? win.unmaximize() : win.maximize();
+  }
+})

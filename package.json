@@ -1,4 +1,9 @@
 {
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  },
   "name": "graduation_project",
   "version": "0.1.0",
   "author": "Senya Vitrazov",
@@ -59,6 +64,7 @@
     "concurrently": "^8.2.1",
     "electron": "^26.2.1",
     "electron-is-dev": "^2.0.0",
+    "sass": "^1.69.1",
     "wait-on": "^7.0.1",
     "webpack-node-externals": "^3.0.0"
   }

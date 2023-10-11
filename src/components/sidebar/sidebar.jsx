@@ -1,24 +1,30 @@
 import React, { useState } from 'react';
-import './sidebar.css';
+import styles from './sidebar.module.scss';
+
+const items = [
+  { title: 'Project 1', id: 1, url: ''},
+  { title: 'Project 2', id: 2, url: ''},
+  { title: 'Project 3', id: 3, url: ''},
+];
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleSidebar = () => {
+  const toggleSidebar = () => { 
     setIsOpen(!isOpen);
   };
 
-  return (
-    <div className={`sidebar ${isOpen ? 'open' : 'open'}`}>
-      <button className="toggle-button" onClick={toggleSidebar}>
-        Toggle Sidebar
-      </button>
-      <ul className="menu">
-        <li>Menu Item 1</li>
-        <li>Menu Item 2</li>
-        <li>Menu Item 3</li>
+  return (<>
+    <div className={styles.burgerButton} onClick={toggleSidebar}>
+      <div className={styles.burger}></div>
+    </div>
+    <div className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
+      <ul className={styles.listContainer}>
+        <li>Home</li>
+        {items.map( (e, i) => <li key={i}>{e.title}</li>)}
       </ul>
     </div>
+    </>
   );
 };
 
