@@ -1,0 +1,14 @@
+@import '../../styles/abstracts/constants';
+
+.RoundedButton {
+  margin: 30px 0;
+  padding: 10px 0;
+  border-radius: 6px;
+  border: 1px solid $black-color;
+  background: white;
+  font-size: 1.6rem;
+  &:hover {
+    background: $black-color !important ;
+    color: white;
+  }
+}

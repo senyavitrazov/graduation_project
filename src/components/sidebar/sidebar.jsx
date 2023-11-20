@@ -15,8 +15,8 @@ const Sidebar = () => {
   };
 
   return (<>
-    <div className={styles.burgerButton} onClick={toggleSidebar}>
-      <div className={styles.burger}></div>
+    <div className={`${(isOpen ? styles.active : '')} ${styles.burger}`} onClick={toggleSidebar}>
+      <div className={styles.burgerLine}></div>
     </div>
     <div className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
       <ul className={styles.listContainer}>

@@ -1,6 +1,7 @@
 const path = require('path');
 const { app, BrowserWindow, ipcMain } = require('electron');
-const isDev = app.isPackaged ? false : require('electron-is-dev'); 
+const isDev = app.isPackaged ? false : require('electron-is-dev');
+const { importProfiles, exportProfiles } = require('../src/model/profilemgr');
 
 let win;
 
@@ -12,7 +13,7 @@ async function createWindow() {
     height: 1080,
     resizable: true,
     titleBarOverlay: true,
-    title: 'СОДПП',
+    title: 'trackING sOftware defecTs syStem (СОДПП/INGOTS)',
     frame: false,
     webPreferences: {
       nodeIntegration: true,
@@ -47,3 +48,12 @@ ipcMain.on('toMain', (event, data) => {
     win.isMaximized() ? win.unmaximize() : win.maximize();
   }
 })
+
+app.on('export-profiles', (event, profilesData) => {
+  exportProfiles(profilesData);
+});
+
+app.on('import-profiles', async (event) => {
+  const profilesData = await importProfiles();
+  win.webContents.send('imported-profiles', profilesData);
+});

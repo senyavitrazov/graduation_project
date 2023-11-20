@@ -2,8 +2,18 @@
 
 $burger-side: 35px;
 
+%burger-line {
+  display: inline-block;
+  content: "";
+  position: absolute;
+  background: $primary-color;
+  width: 100%;
+  height: 2px;
+  transition: all 0.3s ease 0s;
+}
 
-.burgerButton {
+
+.burger {
   cursor: pointer;
 
   width: $burger-side;
@@ -13,31 +23,50 @@ $burger-side: 35px;
   top: 20px;
   left: 20px;
   z-index: 2;
+  height: 20px;
+
+  &::after {
+    @extend %burger-line;
+    transition: all 0.3s ease 0s;
+    top: 0;
+    left: 0;
+  }
+  
+  &::before {
+    @extend %burger-line;
+    bottom: 0;
+    left: 0;  
+  }
 }
 
-.burger {
-  height: 3px;
-  width: 100%;
-  position: absolute;
-  top: calc(50% - 3px);
-  border-radius: 4px;
-  background: $primary-color;
+.burgerLine {
+  @extend %burger-line;
+  top: calc(50% - 1px);
+  left: 0;
+  scale: 1;
+}
+
+.active.burger {
   
-  &::after, &::before {
-    content: '';
-    position: absolute;
-    top: 8px;
-    height: 3px;
+  .burgerLine {
+    top: calc(50% - 1px);
+    left: 0;
+    scale: 0;
+  }
+
+  &::after {
     width: 100%;
-    background: $primary-color;
-    border-radius: 4px;
+    top: 50%;
+    transform: rotate(-45deg) translate(0, -50%);
   }
 
   &::before {
-    bottom: 8px;
-    top: auto;
+    width: 100%;
+    bottom: 50%;
+    transform: rotate(45deg) translate(0, 50%);
   }
 }
+
 
 .sidebar {
   min-width: 200px;

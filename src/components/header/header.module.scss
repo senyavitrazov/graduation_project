@@ -3,7 +3,7 @@
 .header {
   display: flex;
   height: 28px;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid $black-color;
   user-select: none;
   .title {
     flex-grow: 1;

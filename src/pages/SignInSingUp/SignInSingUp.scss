@@ -1,0 +1,87 @@
+@import '../../styles/abstracts/constants';
+
+.SignInForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 400px;
+  margin: 0 auto;
+  margin-top: 18%;
+  user-select: none;
+
+  &__header { 
+    font-size: 3.8rem;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  &__buttonsContainer {
+    display: flex;
+    justify-content: space-between;
+
+    > * {
+      width: 48%;
+    }
+  }
+
+  &__activeButton {
+    background: $light-tertiary-color !important;
+  }
+
+  &__passwordContainer {
+    position: relative;
+  }
+
+  &__passwordComment {
+    width: 26px;
+    height: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    right: -40px;
+    top: 0px;
+    border: 1px solid $black-color;
+    border-radius: 50%;
+
+    > span {
+      font-size: 2rem;
+      margin-bottom: 3px;
+    }
+
+    &:hover {
+      filter: brightness(75%);
+      color: $tertiary-color;
+      border-color: $tertiary-color;
+    }
+  }
+}
+
+.form {
+  &__input {
+      width: 100%;
+      height: 46px;
+      font-size: 1.6rem;
+      margin-top: 24px;
+      padding: 8px 12px;
+      line-height: 2rem;
+  
+      &.wrong {
+        border: 3px solid red;
+      }
+  }
+}
+
+.passwordInfoContainer {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
