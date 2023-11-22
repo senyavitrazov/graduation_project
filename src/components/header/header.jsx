@@ -4,7 +4,7 @@ import winMax from '../../assets/window_maximize.png';
 
 const Header = () => {
   function sendToMain(message) {
-    window.contextBridgeApi?.send('toMain', { action: message });
+    window.contextBridgeApi?.send('trafficlight-channel', { action: message });
   };
 
   return <header className={style.header}>

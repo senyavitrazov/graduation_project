@@ -106,3 +106,4 @@ dist
 .vscode/
 out/
 build/
+src/model/data/profiles.json

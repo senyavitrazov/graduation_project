@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 
-class Storage {
+class FileStorage {
   _fileName;
 
   // Constructor to initialize the instance with a file name
@@ -61,4 +61,4 @@ class Storage {
   }
 }
 
-module.exports = { Storage };
+module.exports = { FileStorage };
