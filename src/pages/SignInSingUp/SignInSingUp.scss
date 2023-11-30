@@ -85,22 +85,3 @@
   justify-content: center;
   position: relative;
 }
-
-#errorMessage {
-  display: none;
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-
-  font-size: 1.8rem;
-  text-align: left;
-  color: $red-color;
-  font-weight: 600;
-  
-  background: $pink-color;
-
-  &::before { 
-    content: '\2715';
-    margin: 0 10px;
-  }
-}

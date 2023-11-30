@@ -1,0 +1,22 @@
+@import '../../styles/abstracts/constants';
+
+#errorMessage {
+  display: none;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+
+  font-size: 1.6rem;
+  text-align: left;
+  color: $red-color;
+  font-weight: 600;
+
+  background: $pink-color;
+
+  &::before {
+    content: '\2715';
+    font-size: 1.6rem;
+    line-height: 100%;
+    margin: 0 10px;
+  }
+}

@@ -1,13 +1,11 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { PasswordInfoPopup } from "./PasswordInfoPopup/PasswordInfoPopup";
 import RoundedButton from "../../components/RoundedButton/RoundedButton";
+import ErrorMessage from "../../components/errorMessage/errorMessage";
 import './SignInSingUp.scss';
 
 
 const SignInSingUp = props => {
-  const navigate = useNavigate();
-
   const [login, setLogin] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -15,37 +13,48 @@ const SignInSingUp = props => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isSignUpFieldsValid, setSignUpFieldsValid] = useState(false);
-
+  const [error, setError] = useState(null);
+  
   const isInputValid = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/g.test(inputValue);
   const isConfirmPasswordValid = isSignUpMode
     ? confirmPassword === inputValue
     : true;
 
   useEffect(() =>  {
-    isSignUpFieldsValid && setSignUpFieldsValid(false)
+    isSignUpFieldsValid && setSignUpFieldsValid(false);
+    error && setError(null); 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [login, inputValue, confirmPassword, isSignUpMode]);
   
   const loginButtonHandler = async () => {
     if (!isSignUpMode) {
-      //WARNING! нельзя прокидывать весь obj, нужно в handler выбирать и отдавать
-      let profiles = await window.contextBridgeApi?.invoke('duplex-profiles-channel');
-      console.log(profiles);
+      setError(null);
+      let profile = await window.contextBridgeApi?.invoke('duplex-profiles-channel', {
+        action: 'search',
+        credentials: {
+          login,
+          password: inputValue,
+        },
+      });
+      profile instanceof Error ?  setError(profile) : props.onLogin();
     } else {
       setIsSignUpMode(!isSignUpMode);
     }
   };
 
-  const signUpButtonHandler = () => {
+  const signUpButtonHandler = async () => {
     if (isSignUpMode) {
       if (isInputValid && isConfirmPasswordValid && login.length > 8) {
         window.contextBridgeApi?.send('export-profiles-channel', { 
           action: 'export-profiles-append-array',
-          profilesData: [{[login]: inputValue}]
+          profilesData: [{
+            id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+            credentials: {login, password: inputValue},
+          }]
         });
         props.onLogin();
-        navigate('/');
       } else { 
+        setError(null);
         setSignUpFieldsValid(p => !p);
       }
     } else {
@@ -107,7 +116,8 @@ const SignInSingUp = props => {
         <RoundedButton type="button" className={isSignUpMode ? 'SignInForm__activeButton' : ''} onClick={signUpButtonHandler}>Sign Up</RoundedButton>
       </div>
     </form>
-       <div id="errorMessage" style={isSignUpFieldsValid ? {display: 'block'} : {}}>Invalid fields: please check your inputs</div>
+      <ErrorMessage error={isSignUpFieldsValid}>Invalid fields: please check your inputs</ErrorMessage>
+      <ErrorMessage error={error}></ErrorMessage>
   </div>
   );
 }

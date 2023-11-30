@@ -3,6 +3,7 @@ const { app, BrowserWindow, session } = require('electron');
 const electronIpcMain = require('electron').ipcMain;
 const isDev = app.isPackaged ? false : require('electron-is-dev');
 const { importProfiles, exportProfiles, exportProfilesArray } = require('../src/model/profilemgr');
+const bcrypt = require('bcryptjs');
 
 let win, defaultSession;
 
@@ -53,32 +54,44 @@ electronIpcMain.on('trafficlight-channel', (e, data) => {
   }
 });
 
-electronIpcMain.on('export-profiles-channel', (e, data) => {
+electronIpcMain.on('export-profiles-channel', async (e, data) => {
   if (data.action === 'export-profiles') {
     exportProfiles(data.profilesData || null);
   }
   if (data.action === 'export-profiles-append-array') {
-    exportProfilesArray(data.profilesData || null);
+    let profiles = [];
+    if (typeof data.profilesData === 'object' && !Array.isArray(data.profilesData)) {
+      profiles = [data.profilesData];
+    } if (Array.isArray(data.profilesData)) {
+      profiles.push(...data.profilesData);
+    } else {
+      console.error('Invalid profilesData format. Expecting an object or an array of objects.');
+    }
+    const password = profiles[0].credentials.password;
+    profiles[0].credentials.password = await bcrypt.hash(password, (await bcrypt.genSalt(10)))
+    exportProfilesArray( profiles || null);
   }
 });
 
 electronIpcMain.handle('duplex-profiles-channel', async (e, data) => {
   try {
-    return await importProfiles();
+    const  profiles = await importProfiles();
+    switch (data.action) {
+      case 'search':
+        const profile = profiles.find(obj => (obj.credentials.login === data.credentials.login));
+        if (!profile) return new Error('Such profile doesnt exist', { cause: { login: false, password: false }});
+        if (profile.credentials.password) {
+          //console.log(data.credentials.password, profile.credentials.password);
+          return await bcrypt.compare(data.credentials.password, profile.credentials.password) || new Error('Invalid password', { cause: { login: true, password: false }});
+        }
+        return null;
+      default: return null;
+    }
   } catch (error) {
     console.log(error.message);
     return error;
   }
-})
-
-/*
-  if (data.action === 'import-profiles') {
-     const responseObj = await importProfiles();
-     console.log(responseObj);
-     win.webContents.send('fromMain', responseObj);
-   }
-*/
-
+});
 
 electronIpcMain.handle('set-cookies-channel', (e, cookiesArray) => {
   if (!Array.isArray(cookiesArray)) cookiesArray = [cookiesArray];
