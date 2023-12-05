@@ -45,22 +45,18 @@ const SignInSingUp = props => {
   const signUpButtonHandler = async () => {
     if (isSignUpMode) {
       if (isInputValid && isConfirmPasswordValid && login.length > 8) {
-        
-        window.contextBridgeApi?.receive('error-channel', (err) => {
-          setError(err);
-          console.log('1:', err);
-        });
-
-        window.contextBridgeApi?.send('export-profiles-channel', { 
+        window.contextBridgeApi?.invoke('duplex-profiles-channel', { 
           action: 'export-profiles-append-array',
           profilesData: [{
             id: Date.now().toString(36) + Math.random().toString(36).slice(2),
             credentials: {login, password: inputValue},
           }]
-        });
-
-        await props.onLogin();
-        console.log('2:!!', );
+        }).then(() => {
+            props.onLogin()
+          })
+          .catch((err) => {
+            err && setError('Error: User with such login is already registered');
+          });
       } else { 
         setError(null);
         setSignUpFieldsValid(p => !p);
@@ -124,8 +120,8 @@ const SignInSingUp = props => {
         <RoundedButton type="button" className={isSignUpMode ? 'SignInForm__activeButton' : ''} onClick={signUpButtonHandler}>Sign Up</RoundedButton>
       </div>
     </form>
-      <ErrorMessage error={isSignUpFieldsValid}>Invalid fields: please check your inputs</ErrorMessage>
-      <ErrorMessage error={error}></ErrorMessage>
+      <ErrorMessage id='error-invalid-fielf' error={isSignUpFieldsValid}>Invalid fields: please check your inputs</ErrorMessage>
+      <ErrorMessage id='error-other-error' error={error}></ErrorMessage>
   </div>
   );
 }

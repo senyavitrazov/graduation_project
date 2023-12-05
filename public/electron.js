@@ -58,25 +58,6 @@ electronIpcMain.on('export-profiles-channel', async (e, data) => {
   if (data.action === 'export-profiles') {
     exportProfiles(data.profilesData || null);
   }
-  if (data.action === 'export-profiles-append-array') {
-    let profiles = [];
-    if (typeof data.profilesData === 'object' && !Array.isArray(data.profilesData)) {
-      profiles = [data.profilesData];
-    } if (Array.isArray(data.profilesData)) {
-      profiles.push(...data.profilesData);
-    } else {
-      console.error('Invalid profilesData format. Expecting an object or an array of objects.');
-    }
-    const password = profiles[0].credentials.password;
-    profiles[0].credentials.password = await bcrypt.hash(password, (await bcrypt.genSalt(10)))
-    
-    exportProfilesArray(profiles || null).then((result) => {
-      win.webContents.send('error-channel', null); 
-    }).catch((error) => {
-      console.error('Error during exportProfilesArray:\n', error); 
-      win.webContents.send('error-channel', error); 
-    });
-  }
 });
 
 electronIpcMain.handle('duplex-profiles-channel', async (e, data) => {
@@ -91,6 +72,36 @@ electronIpcMain.handle('duplex-profiles-channel', async (e, data) => {
           return await bcrypt.compare(data.credentials.password, profile.credentials.password) || new Error('Invalid password', { cause: { login: true, password: false }});
         }
         return null;
+      case 'export-profiles-append-array':
+        return new Promise(async (resolve, reject) => {
+          try {
+            let newProfiles = [];
+            if (typeof data.profilesData === 'object' && !Array.isArray(data.profilesData)) {
+              newProfiles = [data.profilesData];
+            } if (Array.isArray(data.profilesData)) {
+              newProfiles.push(...data.profilesData);
+            } else {
+              reject('Invalid profilesData format. Expecting an object or an array of objects.');
+              return;
+            }
+
+            const password = newProfiles[0].credentials.password;
+            newProfiles[0].credentials.password = await bcrypt.hash(password, (await bcrypt.genSalt(10)));
+            
+            exportProfilesArray(newProfiles || null)
+              .then((result) => {
+                resolve(null);
+              })
+              .catch((error) => {
+                console.error('Error during exportProfilesArray:\n', error);
+                reject(error);
+              });
+
+          } catch (error) {
+            console.error('Error in export-profiles-channel:\n', error);
+            reject(error);
+          }
+        });
       default: return null;
     }
   } catch (error) {
