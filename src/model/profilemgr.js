@@ -13,6 +13,25 @@ const FILES_PATHS   = {
 const storageDirectory = path.join(__dirname, FILES_PATHS.DIRECTORY);
 const profilesFilePath = path.join(storageDirectory, FILES_PATHS.POFILE_FILE_NAME);
 
+const fieldsToCheck = ['credentials.login'];
+
+function areArraysEqualByField(array1, array2, fields) {
+  if (!Array.isArray(array1) || !Array.isArray(array2)) {
+    return false;
+  }
+
+  function getValueByField(obj, field) {
+    const fieldParts = field.split('.');
+    return fieldParts.reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : undefined), obj);
+  }
+
+  return array1.some(obj1 =>
+    array2.some(obj2 =>
+      fields.every(field => getValueByField(obj1, field) === getValueByField(obj2, field))
+    )
+  );
+}
+
 /**
  * Adding array or one profile to end of file
  *
@@ -30,6 +49,9 @@ exports.exportProfilesArray = async (profilesData) => {
     if (typeof profilesData === 'object' && !Array.isArray(profilesData)) {
       profilesData = [profilesData];
     } if (Array.isArray(profilesData)) {
+      if (areArraysEqualByField(existingProfiles, profilesData, fieldsToCheck)) {
+        throw new Error('Error: Duplicate logins');
+      }
       existingProfiles.push(...profilesData);
     } else {
       console.error('Invalid profilesData format. Expecting an object or an array of objects.');
@@ -40,6 +62,7 @@ exports.exportProfilesArray = async (profilesData) => {
     console.log('Profiles have been successfully exported');
   } catch (err) {
     console.error('Exporting profiles error:', err);
+    throw err;
   }
 };
 

@@ -69,7 +69,13 @@ electronIpcMain.on('export-profiles-channel', async (e, data) => {
     }
     const password = profiles[0].credentials.password;
     profiles[0].credentials.password = await bcrypt.hash(password, (await bcrypt.genSalt(10)))
-    exportProfilesArray( profiles || null);
+    
+    exportProfilesArray(profiles || null).then((result) => {
+      win.webContents.send('error-channel', null); 
+    }).catch((error) => {
+      console.error('Error during exportProfilesArray:\n', error); 
+      win.webContents.send('error-channel', error); 
+    });
   }
 });
 

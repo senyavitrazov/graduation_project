@@ -45,6 +45,12 @@ const SignInSingUp = props => {
   const signUpButtonHandler = async () => {
     if (isSignUpMode) {
       if (isInputValid && isConfirmPasswordValid && login.length > 8) {
+        
+        window.contextBridgeApi?.receive('error-channel', (err) => {
+          setError(err);
+          console.log('1:', err);
+        });
+
         window.contextBridgeApi?.send('export-profiles-channel', { 
           action: 'export-profiles-append-array',
           profilesData: [{
@@ -52,7 +58,9 @@ const SignInSingUp = props => {
             credentials: {login, password: inputValue},
           }]
         });
-        props.onLogin();
+
+        await props.onLogin();
+        console.log('2:!!', );
       } else { 
         setError(null);
         setSignUpFieldsValid(p => !p);
