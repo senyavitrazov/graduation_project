@@ -1,0 +1,43 @@
+@import '../../styles/abstracts/constants';
+
+.menu-root {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+
+  .menu-item {
+    user-select: none;
+    padding: 13px 20px;
+    font-size: 1.8rem;
+    font-weight: 500;
+    display: inline-block;
+    vertical-align: bottom;
+    
+    &::after {
+      content: "";
+      border-color: transparent;
+      transition: border-color .25s ease-in-out;
+    }
+
+    &.selected, &:hover {
+      position: relative;
+      cursor: pointer;
+
+      &::after { 
+        position: absolute;
+        display: block;
+        bottom: 0;
+        inset-inline: 10%;
+        width: 80%;
+        height: 0;
+        content: "";
+        border-bottom: 2px solid;
+        border-color: $red-color;
+      } 
+    }
+    &.selected { 
+      color: $red-color;
+    }
+  }
+
+}

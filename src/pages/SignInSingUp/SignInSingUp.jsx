@@ -45,10 +45,11 @@ const SignInSingUp = props => {
   const signUpButtonHandler = async () => {
     if (isSignUpMode) {
       if (isInputValid && isConfirmPasswordValid && login.length > 8) {
+        const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
         window.contextBridgeApi?.invoke('duplex-profiles-channel', { 
           action: 'export-profiles-append-array',
           profilesData: [{
-            id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+            local_id: id,
             credentials: {login, password: inputValue},
           }]
         }).then(() => {

@@ -1,0 +1,17 @@
+@import '../../styles/abstracts/constants';
+
+.container {
+  display: flex;
+  align-items: center;
+  padding: 8px 24px;
+  height: 72px;
+  border-bottom: 2px solid;
+  border-color: $red-color;
+  > * {
+    line-height: 32px;
+  }
+  h4 {
+    margin: 6px 0px 0px 13px;
+    filter: contrast(30%);
+  }
+}
