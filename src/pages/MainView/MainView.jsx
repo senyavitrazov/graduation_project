@@ -1,11 +1,12 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styles from './MainView.module.scss'; 
 import HorizontalMenu from '../../components/HorizontalMenu/HorizontalMenu';
 import PageContainer from '../../components/PageContainer/PageContainer';
 import PageHeader from '../../components/PageHeader/PageHeader';
-import { Badge, Table, Tag } from 'antd';
+import { Badge, Form, Select, Table } from 'antd';
 import { GlobalContext } from '../../App';
 import Pagination from '../../components/Pagination/Pagination';
+import Search from 'antd/es/input/Search';
 
 const items = [
   {
@@ -91,16 +92,18 @@ const MainView = () => {
   const [defects, setDefects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState(1);
-  const sizeOfPage = 2; 
+  const [searchQuery, setSearchQuery] = useState("");
+  const sizeOfPage = 5; 
   const { serverUrl } = useContext(GlobalContext);
 
   useEffect(() => {
     fetchData(1, sizeOfPage);
   }, []);
 
-  const fetchData = (page, pageSize) => {
+  const fetchData = (page, pageSize, query = '') => {
     setLoading(true);
-    fetch(`${serverUrl}/defects?page=${page}&limit=${pageSize}`, {
+    const url = `${serverUrl}/defects?page=${page}&limit=${pageSize}&search=${query}`;
+    fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -126,13 +129,57 @@ const MainView = () => {
   return (<div className={styles.MainView}>
     <HorizontalMenu onClick={onClick} selectedKeys={[current]} items={items}></HorizontalMenu>
     <PageHeader subtitle={'Track defects and projects'}>Dashboard</PageHeader>
-    <PageContainer className={styles.content}>  
+    <PageContainer className={styles.content}>
+      <div className={styles['filter-container']}>
+        <div className={styles['filter-subcontainer']}>
+          <Search placeholder="Search"
+          onSearch={(value) => {
+              setSearchQuery(value);
+              fetchData(1, sizeOfPage, value)
+            }}/>
+        </div>
+        <Form className={styles['filter-subcontainer']} layout="inline">
+          <Form.Item label="Priority">
+            <Select style={{width: 150}} placeholder="Any priority">
+              <Select.Option value="High"></Select.Option>
+              <Select.Option value="Medium"></Select.Option>
+              <Select.Option value="Low"></Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Severity">
+            <Select style={{width: 150}} placeholder="Any severity">
+              <Select.Option value="Critical"></Select.Option>
+              <Select.Option value="Major"></Select.Option>
+              <Select.Option value="Average"></Select.Option>
+              <Select.Option value="Minor"></Select.Option>
+            </Select>
+          </Form.Item>
+          <div className={styles['button-container']}>
+            <button>Clear</button>
+            <button>Apply Filters</button>
+          </div>  
+        </Form>
+      </div>
       <Table
+        rowKey={e => e._id}
         className={styles.table}
         loading={loading} 
         columns={columns} 
         dataSource={defects}
-        // expandable={} сделать описание??? кратность сделать чтобы когда недобор строк в последней пагинация не ехала
+        expandable={{
+          expandedRowRender: (record) => (
+            <p
+              style={{
+                margin: 0,
+                fontSize: 14,
+                marginLeft: 50,
+              }}
+            >
+              {record.description}
+            </p>
+          ),
+          rowExpandable: (record) => record.name !== '',
+        }}
         pagination={false}> 
       </Table>
       <Pagination
@@ -140,7 +187,7 @@ const MainView = () => {
         currentPage={current}
         totalCount={totalAmount}
         pageSize={sizeOfPage}
-        fetchData={fetchData}
+        fetchData={(page) => fetchData(page, sizeOfPage, searchQuery)}
         serverUrl={serverUrl}
       />
     </PageContainer>

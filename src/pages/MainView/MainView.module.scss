@@ -1,3 +1,5 @@
+@import '../../styles/abstracts/constants';
+
 .MainView { 
   display: flex;
   flex-direction: column;
@@ -11,8 +13,50 @@
   }
   .table {
     width: 100%;
+    a {
+      color: $black-color;
+      border-bottom: 1px solid $black-color;
+    }
   }
-  .pagination-bar {
+}
 
+.filter-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  > * {
+    border-radius: 6px;
+    flex-basis: 58%;
+  }
+
+  .filter-subcontainer {
+    font-size: 1.4rem;
+    background: white;
+    margin-bottom: 24px;
+    padding: 16px 18px;
+    
+    &:last-child {
+      flex-basis: 40%;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .button-container {
+      display: flex;
+      
+      button {
+        &:last-child {
+          background: $red-color;
+          color: white;
+        }
+        margin-left: 8px;
+        border: 1px solid $light-tertiary-color;
+        line-height: 2.2rem;
+        border-radius: 6px;
+        padding: 4px 15px;
+      }
+    }
   }
 }
