@@ -7,6 +7,7 @@ import { Badge, Form, Select, Table } from 'antd';
 import { GlobalContext } from '../../App';
 import Pagination from '../../components/Pagination/Pagination';
 import Search from 'antd/es/input/Search';
+import Link from 'antd/es/typography/Link';
 
 const items = [
   {
@@ -36,14 +37,15 @@ function getBadgeStatus(type_of_state) {
   }
 }
 
-
 const columns = [
   {
     title: 'Status',
     dataIndex: 'current_state',
     key: 'status',
     render: (state) => state ? 
-      <Badge status={getBadgeStatus(state.type_of_state)} text={(state.type_of_state.toUpperCase()[0] +  state.type_of_state.slice(1)).replace('_', ' ')}/>
+      <Badge status={getBadgeStatus(state.type_of_state)} 
+        className={styles.badge}
+        text={(state.type_of_state.toUpperCase()[0] +  state.type_of_state.slice(1)).replace('_', ' ')}/>
       : null,
       width: 120,
   },
@@ -51,14 +53,15 @@ const columns = [
     title: 'Defect',
     dataIndex: 'defect_title',
     key: 'defect',
-    render: (text, record) => <a>{text}</a>,
-    width: '25%'
+    render: (text, record) => <Link ellipsis={{rows: 1}}>{text}</Link>,
+    width: '25%',
   },
   {
     title: 'Project',
     dataIndex: 'project',
     key: 'project',
-    render: (project) => project ? <a>{project.project_title}</a> : null,
+    render: (project) => project ? <Link ellipsis={{rows: 1}}>{project.project_title}</Link> : null,
+    responsive: ['xl']
   },
   {
     title: 'Priority',
@@ -68,6 +71,7 @@ const columns = [
       <Badge status='error' text={priority.toUpperCase()[0] +  priority.slice(1)}/>
       : null,
     width: 200,
+    responsive: ["sm"]
   },
   {
     title: 'Severity',
@@ -77,12 +81,13 @@ const columns = [
       <Badge status='error' text={e.toUpperCase()[0] +  e.slice(1)}/>
       : null,
     width: 200,
+    responsive: ["sm"]
   },
   {
     title: 'Action',
     dataIndex: 'action',
     key: 'action',
-    width: 100,
+    width: 140,
   }
 ];
 
@@ -93,8 +98,8 @@ const MainView = () => {
   const [loading, setLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const sizeOfPage = 5; 
   const { serverUrl } = useContext(GlobalContext);
+  const sizeOfPage = 11; 
 
   useEffect(() => {
     fetchData(1, sizeOfPage);
@@ -131,7 +136,7 @@ const MainView = () => {
     <PageHeader subtitle={'Track defects and projects'}>Dashboard</PageHeader>
     <PageContainer className={styles.content}>
       <div className={styles['filter-container']}>
-        <div className={styles['filter-subcontainer']}>
+        <div className={styles['search-subcontainer']}>
           <Search placeholder="Search"
           onSearch={(value) => {
               setSearchQuery(value);
@@ -140,14 +145,14 @@ const MainView = () => {
         </div>
         <Form className={styles['filter-subcontainer']} layout="inline">
           <Form.Item label="Priority">
-            <Select style={{width: 150}} placeholder="Any priority">
+            <Select style={{width: 140}} placeholder="Any priority">
               <Select.Option value="High"></Select.Option>
               <Select.Option value="Medium"></Select.Option>
               <Select.Option value="Low"></Select.Option>
             </Select>
           </Form.Item>
           <Form.Item label="Severity">
-            <Select style={{width: 150}} placeholder="Any severity">
+            <Select style={{width: 140}} placeholder="Any severity">
               <Select.Option value="Critical"></Select.Option>
               <Select.Option value="Major"></Select.Option>
               <Select.Option value="Average"></Select.Option>
@@ -162,9 +167,10 @@ const MainView = () => {
       </div>
       <Table
         rowKey={e => e._id}
+        scroll={{ y: 627 }}
         className={styles.table}
         loading={loading} 
-        columns={columns} 
+        columns={columns}
         dataSource={defects}
         expandable={{
           expandedRowRender: (record) => (
