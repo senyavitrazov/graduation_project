@@ -10,7 +10,6 @@ const Pagination = props => {
     pageSize,
     className,
     fetchData,
-    serverUrl
   } = props;
 
   const [currentPage, setCurrentPage] = useState(1); // Состояние текущей страницы
@@ -61,7 +60,7 @@ const Pagination = props => {
             })}
             onClick={() => {
               setCurrentPage(pageNumber);
-              fetchData(pageNumber, pageSize); // Вызываем fetchData с выбранной страницей
+              fetchData(pageNumber, pageSize);
             }}
           >
             {pageNumber}

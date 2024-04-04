@@ -1,9 +1,16 @@
 @import '../../styles/abstracts/constants';
 
 .menu-root {
+  width: 100%;
   margin: 0 auto;
+  padding-top: 20px;
+
+  position: fixed;
   display: flex;
   justify-content: center;
+  
+  background: white;
+  z-index: 999;
 
   .menu-item {
     user-select: none;
