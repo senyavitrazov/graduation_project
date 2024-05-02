@@ -21,7 +21,4 @@ contextBridge.exposeInMainWorld(
             let validChannels = ['duplex-profiles-channel'];
             if (validChannels.includes(channel)) {
                 return ipcRenderer.invoke(channel, args);
-            }
-        }
-    }
-);
+}}});

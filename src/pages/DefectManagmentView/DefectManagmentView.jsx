@@ -80,7 +80,9 @@ const DefectManagmentView = () => {
   const [defects, setDefects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [priority, setPriority] = useState(undefined);
+  const [severity, setSeverity] = useState(undefined);
+  const [searchQuery, setSearchQuery] = useState('');
   const { serverUrl } = useContext(GlobalContext);
   const sizeOfPage = 11; 
 
@@ -88,9 +90,18 @@ const DefectManagmentView = () => {
     fetchData(1, sizeOfPage);
   }, []);
 
-  const fetchData = (page, pageSize, query = '') => {
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setPriority(undefined);
+    setSeverity(undefined);
+    fetchData(1, sizeOfPage, '', '', '');
+  };
+
+  const fetchData = (page, pageSize, query = '', priority, severity) => {
     setLoading(true);
-    const url = `${serverUrl}/defects?page=${page}&limit=${pageSize}&search=${query}`;
+    let url = `${serverUrl}/defects?page=${page}&limit=${pageSize}&search=${query}`;
+    if (priority) url += `&priority=${priority}`;
+    if (severity) url += `&severity=${severity}`;
     fetch(url, {
         method: 'GET',
         headers: {
@@ -119,33 +130,39 @@ const DefectManagmentView = () => {
       <div className={styles['filter-container']}>
         <div className={styles['search-subcontainer']}>
           <Search placeholder="Search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           onSearch={(value) => {
               setSearchQuery(value);
-              fetchData(1, sizeOfPage, value)
+              fetchData(1, sizeOfPage, value, priority, severity)
             }}/>
         </div>
         <Form className={styles['filter-subcontainer']} layout="inline">
           <Form.Item label="Priority">
-            <Select style={{width: 140}} placeholder="Any priority">
+            <Select style={{width: 140}} placeholder="Any priority" value={priority} onChange={(value) => setPriority(value)}>
               <Select.Option value="High"></Select.Option>
               <Select.Option value="Medium"></Select.Option>
               <Select.Option value="Low"></Select.Option>
+              <Select.Option value={null}>Any priority</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item label="Severity">
-            <Select style={{width: 140}} placeholder="Any severity">
+            <Select style={{width: 140}} placeholder="Any severity" value={severity} onChange={(value) => setSeverity(value)}>
               <Select.Option value="Critical"></Select.Option>
               <Select.Option value="Major"></Select.Option>
               <Select.Option value="Average"></Select.Option>
               <Select.Option value="Minor"></Select.Option>
+              <Select.Option value={null}>Any severity</Select.Option>
             </Select>
           </Form.Item>
           <div className={styles['button-container']}>
-            <button>Clear</button>
-            <button>Apply Filters</button>
+            <button onClick={() => {handleClearFilters()}}>Clear</button>
+            <button onClick={() => {
+              fetchData(1, sizeOfPage, searchQuery, priority, severity)
+            }}>Apply Filters</button>
           </div>  
         </Form>
-      </div>
+      </div>  
       <Table
         rowKey={e => e._id}
         scroll={{ y: 627 }}
@@ -173,7 +190,7 @@ const DefectManagmentView = () => {
         className={styles['pagination-bar']}
         totalCount={totalAmount}
         pageSize={sizeOfPage}
-        fetchData={(page) => fetchData(page, sizeOfPage, searchQuery)}
+        fetchData={(page) => fetchData(page, sizeOfPage)}
         serverUrl={serverUrl}
       />
     </PageContainer>

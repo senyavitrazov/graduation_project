@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { PasswordInfoPopup } from "./PasswordInfoPopup/PasswordInfoPopup";
 import RoundedButton from "../../components/RoundedButton/RoundedButton";
 import ErrorMessage from "../../components/errorMessage/errorMessage";
+import { GlobalContext } from '../../App';
 import './SignInSingUp.scss';
 
 
@@ -14,7 +15,8 @@ const SignInSingUp = props => {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isSignUpFieldsValid, setSignUpFieldsValid] = useState(false);
   const [error, setError] = useState(null);
-  
+  const { serverUrl } = useContext(GlobalContext);
+
   const isInputValid = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/g.test(inputValue);
   const isConfirmPasswordValid = isSignUpMode
     ? confirmPassword === inputValue
@@ -30,6 +32,7 @@ const SignInSingUp = props => {
     if (!isSignUpMode) {
       setError(null);
       let profile = await window.contextBridgeApi?.invoke('duplex-profiles-channel', {
+        url: serverUrl,
         action: 'search',
         credentials: {
           login,
@@ -46,11 +49,15 @@ const SignInSingUp = props => {
     if (isSignUpMode) {
       if (isInputValid && isConfirmPasswordValid && login.length > 8) {
         const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-        window.contextBridgeApi?.invoke('duplex-profiles-channel', { 
+        window.contextBridgeApi?.invoke('duplex-profiles-channel', {
+          url: serverUrl, 
           action: 'export-profiles-append-array',
           profilesData: [{
             local_id: id,
-            credentials: {login, password: inputValue},
+            credentials: {
+              login,
+              password: inputValue
+            },
           }]
         }).then(() => {
             props.onLogin()
@@ -65,7 +72,7 @@ const SignInSingUp = props => {
     } else {
       setIsSignUpMode(!isSignUpMode);
     }
-  };
+};
 
   const handleInputChange = (e) => {
     const value = e.target.value;

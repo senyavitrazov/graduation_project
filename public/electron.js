@@ -2,7 +2,7 @@ const path = require('path');
 const { app, BrowserWindow, session } = require('electron');
 const electronIpcMain = require('electron').ipcMain;
 const isDev = app.isPackaged ? false : require('electron-is-dev');
-const { importProfiles, exportProfiles, exportProfilesArray } = require('../src/model/profilemgr');
+//const { importProfiles, exportProfiles, exportProfilesArray } = require('../src/model/profilemgr');
 const bcrypt = require('bcryptjs');
 
 let win, defaultSession;
@@ -54,48 +54,81 @@ electronIpcMain.on('trafficlight-channel', (e, data) => {
   }
 });
 
-electronIpcMain.on('export-profiles-channel', async (e, data) => {
+/*electronIpcMain.on('export-profiles-channel', async (e, data) => {
   if (data.action === 'export-profiles') {
     exportProfiles(data.profilesData || null);
   }
-});
+});*/
 
 electronIpcMain.handle('duplex-profiles-channel', async (e, data) => {
   try {
-    const  profiles = await importProfiles();
+    //const  profiles = await importProfiles();
     switch (data.action) {
       case 'search':
+        const profilesResponse = await fetch(data.url + "/users");
+        const profiles = await profilesResponse.json();
         const profile = profiles.find(obj => (obj.credentials.login === data.credentials.login));
         if (!profile) return new Error('Such profile doesnt exist', { cause: { login: false, password: false }});
-        if (profile.credentials.password) {
+        if (profile.credentials.hash_of_password) {
           //console.log(data.credentials.password, profile.credentials.password);
-          return await bcrypt.compare(data.credentials.password, profile.credentials.password) || new Error('Invalid password', { cause: { login: true, password: false }});
+          return (
+            (await bcrypt.compare(
+              data.credentials.password,
+              profile.credentials.hash_of_password
+            )) ||
+            new Error("Invalid password", {
+              cause: { login: true, password: false },
+            })
+          );
         }
         return null;
       case 'export-profiles-append-array':
         return new Promise(async (resolve, reject) => {
           try {
-            let newProfiles = [];
+            let newUsers = [];
             if (typeof data.profilesData === 'object' && !Array.isArray(data.profilesData)) {
-              newProfiles = [data.profilesData];
-            } if (Array.isArray(data.profilesData)) {
-              newProfiles.push(...data.profilesData);
+              newUsers.push({
+                credentials: {
+                  login: data.profilesData.credentials.login,
+                  hash_of_password: await bcrypt.hash(data.profilesData.credentials.password, await bcrypt.genSalt(10))
+                },
+                role: data.profilesData.role || false,
+                local_id: data.profilesData.local_id || undefined
+              });
+            } else if (Array.isArray(data.profilesData)) {
+              newUsers = await Promise.all(data.profilesData.map(async profileData => ({
+                credentials: {
+                  login: profileData.credentials.login,
+                  hash_of_password: await bcrypt.hash(profileData.credentials.password, await bcrypt.genSalt(10))
+                },
+                role: profileData.role || false,
+                local_id: profileData.local_id || undefined
+              })));
             } else {
               reject('Invalid profilesData format. Expecting an object or an array of objects.');
               return;
             }
-
-            const password = newProfiles[0].credentials.password;
-            newProfiles[0].credentials.password = await bcrypt.hash(password, (await bcrypt.genSalt(10)));
             
-            exportProfilesArray(newProfiles || null)
+            const saveProfilesResponse = await fetch(
+              data.url + "/users",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newUsers),
+              }
+            );
+            resolve(null);
+            console.log(saveProfilesResponse);
+            /*exportProfilesArray(newProfiles || null)
               .then((result) => {
                 resolve(null);
               })
               .catch((error) => {
                 console.error('Error during exportProfilesArray:\n', error);
                 reject(error);
-              });
+              });*/
 
           } catch (error) {
             console.error('Error in export-profiles-channel:\n', error);

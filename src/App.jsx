@@ -24,7 +24,7 @@ function App() {
             }}/>}/>
           </Routes>
       </div>
-    </GlobalContext.Provider>);  
+    </GlobalContext.Provider>);
 }
 
 //?? <Navitage to="/login"> и не прокидывать пропс или оставить потому что все равно нужно будет кидать токен и все такое 
