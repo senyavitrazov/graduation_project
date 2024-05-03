@@ -1,14 +1,13 @@
 import React, { createContext, useState } from "react";
 import Header from "./components/header/header";
 import './styles/style.scss';
-import { Navigate, Outlet, Route, Routes, useNavigate} from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import SignInSignUp from "./pages/SignInSignUp/SignInSignUp.jsx";
 import MainView from "./pages/MainView/MainView.jsx";
 
 export const GlobalContext = createContext();
 
 function App() {
-  const navigate = useNavigate();
   const [isLoggedIn, setLoggedIn] = useState(false);
   const serverUrl = 'http://localhost:5555';
   const devMode = true;

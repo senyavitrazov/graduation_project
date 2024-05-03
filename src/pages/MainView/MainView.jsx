@@ -8,7 +8,7 @@ import { useState } from 'react';
 const items = [
   {
     label: 'Defects Management',
-    key: 'defects',
+    key: '',
   },
   {
     label: 'Project Management',
@@ -26,11 +26,9 @@ const MainView = () => {
 
   return (
     <div className={styles['main-wrapper']}>
+      <HorizontalMenu key={'horizontal-menu'} onClick={onClick} selectedKeys={[current]} items={items}></HorizontalMenu>
       <Routes>
-        <Route path="/" element={
-          <HorizontalMenu key={'horizontal-menu'} onClick={onClick} selectedKeys={[current]} items={items}></HorizontalMenu>
-        }/>
-        <Route key={'defects-route'} path="defects" element={<DefectManagmentView/>} />
+        <Route key={'defects-route'} path="/" element={<DefectManagmentView/>} />
         <Route key={'projects-route'} path="projects" element={<ProjectManagementView/>} />
       </Routes>
     </div>

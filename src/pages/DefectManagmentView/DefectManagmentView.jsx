@@ -86,7 +86,6 @@ const columns = [
 ];
 
 const menu = (record) => {
-  console.log(record);
   return (
   <Menu>
     <Menu.Item key="1">
