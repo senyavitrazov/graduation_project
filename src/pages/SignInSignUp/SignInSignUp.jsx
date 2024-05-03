@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { PasswordInfoPopup } from "./PasswordInfoPopup/PasswordInfoPopup";
+import { useNavigate } from "react-router-dom";
 import RoundedButton from "../../components/RoundedButton/RoundedButton";
 import ErrorMessage from "../../components/errorMessage/errorMessage";
 import { GlobalContext } from '../../App';
-import './SignInSingUp.scss';
+import './SignInSignUp.scss';
 
 
 const SignInSingUp = props => {
@@ -16,6 +17,7 @@ const SignInSingUp = props => {
   const [isSignUpFieldsValid, setSignUpFieldsValid] = useState(false);
   const [error, setError] = useState(null);
   const { serverUrl } = useContext(GlobalContext);
+  const navigate = useNavigate();
 
   const isInputValid = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/g.test(inputValue);
   const isConfirmPasswordValid = isSignUpMode
@@ -25,8 +27,12 @@ const SignInSingUp = props => {
   useEffect(() =>  {
     isSignUpFieldsValid && setSignUpFieldsValid(false);
     error && setError(null); 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [login, inputValue, confirmPassword, isSignUpMode]);
+
+  const handleLogin = () => {
+    props.onLogin();
+    navigate('/defects');
+  };
   
   const loginButtonHandler = async () => {
     if (!isSignUpMode) {
@@ -39,7 +45,7 @@ const SignInSingUp = props => {
           password: inputValue,
         },
       });
-      profile instanceof Error ?  setError(profile) : props.onLogin();
+      profile instanceof Error ?  setError(profile) : handleLogin();
     } else {
       setIsSignUpMode(!isSignUpMode);
     }
@@ -60,7 +66,7 @@ const SignInSingUp = props => {
             },
           }]
         }).then(() => {
-            props.onLogin()
+            handleLogin()
           })
           .catch((err) => {
             err && setError('Error: User with such login is already registered');

@@ -1,13 +1,15 @@
 import React from 'react';
 import styles from './DefectManagmentView.module.scss';
 import { useContext, useEffect, useState } from 'react';
-import { Badge, Form, Select, Table } from 'antd';
+import { Badge, Dropdown, Form, Menu, Select, Table } from 'antd';
 import { GlobalContext } from '../../App';
 import PageContainer from '../../components/PageContainer/PageContainer';
 import PageHeader from '../../components/PageHeader/PageHeader';
 import Pagination from '../../components/Pagination/Pagination';
 import Search from 'antd/es/input/Search';
 import Link from 'antd/es/typography/Link';
+import { DownOutlined } from '@ant-design/icons';
+const classNames = require('classnames');
 
 function getBadgeStatus(type_of_state) {
   switch (type_of_state) {
@@ -38,14 +40,14 @@ const columns = [
     title: 'Defect',
     dataIndex: 'defect_title',
     key: 'defect',
-    render: (text, record) => <Link ellipsis={{rows: 1}}>{text}</Link>,
+    render: (text, record) => <Link ellipsis={true}>{text}</Link>,
     width: '25%',
   },
   {
     title: 'Project',
     dataIndex: 'project',
     key: 'project',
-    render: (project) => project ? <Link ellipsis={{rows: 1}}>{project.project_title}</Link> : null,
+    render: (project) => project ? <Link ellipsis={true}>{project.project_title}</Link> : null,
     responsive: ['xl']
   },
   {
@@ -73,8 +75,35 @@ const columns = [
     dataIndex: 'action',
     key: 'action',
     width: 140,
+    render: (text = 'Action', record) => (
+      <Dropdown overlay={menu(record)} className={styles['action-container']} trigger={['click']}>
+        <span className={classNames("ant-dropdown-link", styles['action-link'])}>
+          {text} <DownOutlined style={{ fontSize: '1rem'}}/>
+        </span>
+      </Dropdown>
+    ),
   }
 ];
+
+const menu = (record) => {
+  console.log(record);
+  return (
+  <Menu>
+    <Menu.Item key="1">
+      <a href={`/edit-defect/${record._id}`}>Edit Defect</a>
+    </Menu.Item>
+    <Menu.Item key="2">
+      <a href={`/view-defect/${record._id}`}>View Defect</a>
+    </Menu.Item>
+    <Menu.Item key="3">
+      <a href={`/view-project/${record._id}`}>View Project</a>
+    </Menu.Item>
+    <Menu.Item key="4">
+      <a href={`/`}>Archive Defect</a>
+    </Menu.Item>
+  </Menu>)
+};
+
 
 const DefectManagmentView = () => {
   const [defects, setDefects] = useState([]);
