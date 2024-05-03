@@ -3,26 +3,33 @@ import HorizontalMenu from '../../components/HorizontalMenu/HorizontalMenu';
 import DefectManagmentView from '../DefectManagmentView/DefectManagmentView';
 import ProjectManagementView from '../ProjectManagmentView/ProjectManagmentView';
 import styles from './MainView.module.scss'; 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const items = [
   {
     label: 'Defects Management',
-    key: '',
+    key: 'defects',
+    url: '',
   },
   {
     label: 'Project Management',
     key: 'projects',
+    url: 'projects',
   },
   {
     label: 'About',
     key: 'about',
+    url: 'about',
   },
 ];
 
 const MainView = () => {
-  const [current, setCurrent] = useState('defects');
+  const [current, setCurrent] = useState(localStorage.getItem('current_page_of_nav') || 'defects');
   const onClick = (e) => setCurrent(e.key);
+  
+  useEffect(() => {
+    localStorage.setItem('current_page_of_nav', current);
+  }, [current])
 
   return (
     <div className={styles['main-wrapper']}>

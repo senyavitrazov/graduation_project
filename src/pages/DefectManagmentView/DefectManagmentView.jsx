@@ -215,6 +215,7 @@ const DefectManagmentView = () => {
         pagination={false}> 
       </Table>
       <Pagination
+        key={'defects_pagingation'}
         className={styles['pagination-bar']}
         totalCount={totalAmount}
         pageSize={sizeOfPage}

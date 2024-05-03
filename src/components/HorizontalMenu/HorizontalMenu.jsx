@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 
 const HorizontalMenu = ({ onClick, selectedKeys, items }) => {
   const navigate = useNavigate();
-  const handleClick = (key, event) => {
+  const handleClick = (key, url, event) => {
     event.preventDefault(); 
-    navigate(`/${key}`);
+    navigate(`/${url}`);
     onClick({ key });
   };
 
@@ -19,7 +19,7 @@ const HorizontalMenu = ({ onClick, selectedKeys, items }) => {
           <span>{item.label}</span>
           <ul>
             {item.children.map((child) => (
-              <li key={child.key} onClick={(e) => handleClick(child.key, e)}>
+              <li key={child.key} onClick={(e) => handleClick(child.key, child.url, e)}>
                 {child.label}
               </li>
             ))}
@@ -28,7 +28,7 @@ const HorizontalMenu = ({ onClick, selectedKeys, items }) => {
       );
     } else {
       return (
-        <li key={item.key} onClick={(e) => handleClick(item.key, e)} 
+        <li key={item.key} onClick={(e) => handleClick(item.key, item.url, e)} 
         className={classNames(styles['menu-item'], selectedKeys.includes(item.key) ? styles['selected'] : '')}>
           {item.label}
         </li>

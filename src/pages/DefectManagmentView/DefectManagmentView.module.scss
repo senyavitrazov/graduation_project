@@ -72,8 +72,26 @@
         &:last-child {
           background: $red-color;
           color: white;
+          &:hover {
+            background: white;
+            border-color: black;
+            color: black;
+          }
+          &:active {
+            background: $light-tertiary-color !important;
+          }
         }
-
+        &:first-child{ 
+          &:hover {
+            border-color: $primary-color;
+          } 
+          &:active {
+            background: $light-tertiary-color !important;
+          }
+        }       
+        
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+        transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
         margin-left: 8px;
         border: 1px solid $light-tertiary-color;
         line-height: 2.2rem;

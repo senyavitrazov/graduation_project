@@ -1,0 +1,80 @@
+@import '../../styles/abstracts/constants';
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  margin-top: 70px;
+  min-height: calc(100vh - $horizontal-menu-height - $trafficlight-height);
+  width: 100%;
+
+  .content {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .table {
+    width: 100%;
+    height: 100%;
+
+    a {
+      color: $black-color;
+      border-bottom: 1px solid $black-color;
+
+      &.action-link {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+.filter-container {
+  width: 100%;
+  height: 64px;
+  padding: 16px 24px;
+  background: white;
+  margin-top: 24px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  flex-direction: row;
+
+  .filter-subcontainer {
+    display: flex;
+    gap: 16px;
+    width: 35%;
+  }
+  
+  .search-container {
+    max-width: 380px;
+    flex-grow: 1;
+    > * {
+      width: 100%;
+    }
+  }
+
+  .radio-group {
+    > * {
+      user-select: none;
+    }
+  }
+  .add-project-button {
+    user-select: none;
+    &:active {
+      background-color: $light-tertiary-color !important;
+    }
+  }
+}
+
+.custom-column-class {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
