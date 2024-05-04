@@ -3,7 +3,7 @@ import Header from "./components/header/header";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import SignInSignUp from "./pages/SignInSignUp/SignInSignUp.jsx";
 import MainView from "./pages/MainView/MainView.jsx";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, message } from "antd";
 import './styles/style.scss';
 
 export const GlobalContext = createContext();
@@ -21,6 +21,7 @@ function App() {
 
   const theme = {
     token: {
+      lineWidthFocus: 2,
       colorPrimary: '#1c1404a1',
       borderRadius: 2,
     },

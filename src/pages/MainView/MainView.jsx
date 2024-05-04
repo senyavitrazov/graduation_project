@@ -25,11 +25,11 @@ const items = [
 ];
 
 const MainView = () => {
-  const [current, setCurrent] = useState(localStorage.getItem('current_page_of_nav') || 'defects');
+  const [current, setCurrent] = useState(sessionStorage.getItem('current_page_of_nav') || 'defects');
   const onClick = (e) => setCurrent(e.key);
   
   useEffect(() => {
-    localStorage.setItem('current_page_of_nav', current);
+    sessionStorage.setItem('current_page_of_nav', current);
   }, [current])
 
   return (
