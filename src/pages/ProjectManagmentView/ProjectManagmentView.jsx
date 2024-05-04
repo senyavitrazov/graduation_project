@@ -1,13 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import styles from './ProjectManagmentView.module.scss';
+import PageContainer from '../../components/wrappers/PageContainer/PageContainer';
 import PageHeader from '../../components/PageHeader/PageHeader';
-import PageContainer from '../../components/PageContainer/PageContainer';
 import Pagination from '../../components/Pagination/Pagination';
 import { GlobalContext } from '../../App';
 import { Progress, Table, Tag, Form, Radio, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Link from 'antd/es/typography/Link';
 import Search from 'antd/es/input/Search';
+import { useNavigate } from 'react-router-dom';
+import PageWrapper from '../../components/wrappers/PageWrapper/PageWrapper';
 
 const columns = [
   {
@@ -27,7 +29,7 @@ const columns = [
       return (
         <>
           {tasksExist ? (
-            <Progress percent={progressPercentage} />
+            <Progress strokeColor={progressPercentage === 100 ? '' : '#e92748' } percent={progressPercentage} />
           ) : (
             <div style={{textAlign: 'center'}}>No defect-fixing tasks planned</div>
           )}
@@ -43,7 +45,7 @@ const columns = [
       <div className={styles['custom-column-class']}>
         {list_of_users_with_access.map((user) => {
           return (
-            <Tag key={user}>
+            <Tag key={user.id}>
               {user.credentials.login.toUpperCase()}
             </Tag>
           );
@@ -98,6 +100,7 @@ const ProjectManagementView = () => {
   const [projects, setProjects] = useState([]);
   const [isCategoryArchived, setCategoryArchived] = useState('active');
   const { serverUrl } = useContext(GlobalContext);
+   const navigate = useNavigate();
   const sizeOfPage = 11; 
 
   const fetchData = (page, pageSize, query = '') => {
@@ -129,7 +132,6 @@ const ProjectManagementView = () => {
 
   useEffect(() => {
     fetchData(1, sizeOfPage);
-    console.log(projects);
   }, [isCategoryArchived]);
 
   const handleCategoryChange = (e) => {
@@ -137,7 +139,7 @@ const ProjectManagementView = () => {
   };
 
   return (
-  <div className={styles['wrapper']}>
+  <PageWrapper className={styles['wrapper']}>
     <PageHeader>Project Management</PageHeader>
     <PageContainer className={styles.content}>
       <Form className={styles['filter-container']} layout="inline">
@@ -157,6 +159,7 @@ const ProjectManagementView = () => {
           </div>
         </div>
         <Button
+          onClick={() => {navigate('../project/add')}}
           className={styles['add-project-button']}
           icon={<PlusOutlined/>}>Add new Project</Button>
       </Form>
@@ -192,7 +195,7 @@ const ProjectManagementView = () => {
         serverUrl={serverUrl}
       />
     </PageContainer>
-  </div>);
+  </PageWrapper>);
 };
 
 export default ProjectManagementView;

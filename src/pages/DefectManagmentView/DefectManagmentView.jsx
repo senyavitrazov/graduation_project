@@ -3,12 +3,13 @@ import styles from './DefectManagmentView.module.scss';
 import { useContext, useEffect, useState } from 'react';
 import { Badge, Dropdown, Form, Menu, Select, Table } from 'antd';
 import { GlobalContext } from '../../App';
-import PageContainer from '../../components/PageContainer/PageContainer';
+import PageContainer from '../../components/wrappers/PageContainer/PageContainer';
 import PageHeader from '../../components/PageHeader/PageHeader';
 import Pagination from '../../components/Pagination/Pagination';
 import Search from 'antd/es/input/Search';
 import Link from 'antd/es/typography/Link';
 import { DownOutlined } from '@ant-design/icons';
+import PageWrapper from '../../components/wrappers/PageWrapper/PageWrapper';
 const classNames = require('classnames');
 
 function getBadgeStatus(type_of_state) {
@@ -152,7 +153,7 @@ const DefectManagmentView = () => {
         console.log(error);
       });
   };
-  return (<div className={styles.DefectManagmentView}>
+  return (<PageWrapper className={styles.DefectManagmentView}>
     <PageHeader subtitle={'Track defects and projects'}>Dashboard</PageHeader>
     <PageContainer className={styles.content}>
       <div className={styles['filter-container']}>
@@ -223,7 +224,7 @@ const DefectManagmentView = () => {
         serverUrl={serverUrl}
       />
     </PageContainer>
-  </div>);
+  </PageWrapper>);
 };
 
 export default DefectManagmentView;

@@ -1,9 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import HorizontalMenu from '../../components/HorizontalMenu/HorizontalMenu';
 import DefectManagmentView from '../DefectManagmentView/DefectManagmentView';
 import ProjectManagementView from '../ProjectManagmentView/ProjectManagmentView';
+import AddProjectForm from '../AddProjectForm/AddProjectForm';
 import styles from './MainView.module.scss'; 
-import { useEffect, useState } from 'react';
 
 const items = [
   {
@@ -37,6 +38,7 @@ const MainView = () => {
       <Routes>
         <Route key={'defects-route'} path="/" element={<DefectManagmentView/>} />
         <Route key={'projects-route'} path="projects" element={<ProjectManagementView/>} />
+        <Route key={'projects-add'} path="project/add" element={<AddProjectForm/>} />
       </Routes>
     </div>
   );
