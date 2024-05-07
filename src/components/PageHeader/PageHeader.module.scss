@@ -7,10 +7,17 @@
   height: 72px;
   border-bottom: 2px solid;
   border-color: $red-color;
+  h3 {
+    overflow: hidden;
+    line-height: 40px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
   > * {
     line-height: 32px;
   }
-  h4 {
+  p {
+    font-size: 2rem;
     margin: 6px 0px 0px 13px;
     filter: contrast(30%);
   }

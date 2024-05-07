@@ -8,7 +8,7 @@ const PageHeader = ({children, className, subtitle, backButton}) => {
   return (<div className={`${styles.container}${className ? ' ' + className : ''}`}>
     {backButton ? <ArrowLeftOutlined style={{fontSize: 18, marginRight: 16, paddingTop: 4}} onClick={() => {navigate(-1)}}/> : ''}
     <h3>{children}</h3>
-    {subtitle ? <h4>{subtitle}</h4> : ''}
+    {subtitle ? <p>{subtitle}</p> : ''}
   </div>);
 };
 

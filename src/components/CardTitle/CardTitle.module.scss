@@ -1,0 +1,16 @@
+@import '../../styles/abstracts/constants';
+
+.project-title {
+  line-height: 32px;
+}
+
+.project-title-span {
+  font-size: 1.4rem;
+  color: $blue;
+  cursor: pointer;
+  transition: color .3s;
+
+  &:hover {
+    color: $blue-hover;
+  }
+}

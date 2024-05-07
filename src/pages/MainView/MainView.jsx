@@ -5,6 +5,7 @@ import DefectManagmentView from '../DefectManagmentView/DefectManagmentView';
 import ProjectManagementView from '../ProjectManagmentView/ProjectManagmentView';
 import AddProjectForm from '../AddProjectForm/AddProjectForm';
 import styles from './MainView.module.scss'; 
+import ProjectPage from '../ProjectPage/ProjectPage';
 
 const items = [
   {
@@ -38,7 +39,8 @@ const MainView = () => {
       <Routes>
         <Route key={'defects-route'} path="/" element={<DefectManagmentView/>} />
         <Route key={'projects-route'} path="projects" element={<ProjectManagementView/>} />
-        <Route key={'projects-add'} path="project/add" element={<AddProjectForm/>} />
+        <Route key={'projects-add'} path="projects/add" element={<AddProjectForm/>} />
+        <Route key={'projects-add'} path="projects/:id" element={<ProjectPage/>} />
       </Routes>
     </div>
   );

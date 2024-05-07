@@ -1,0 +1,38 @@
+@import '../../styles/abstracts/constants';
+
+.content {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  .container {
+    width: 40%;
+    min-width: 700px;
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .spiner { 
+    margin: 24px 0;
+    display: flex;
+    height: 162px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .add-defect-button {
+    box-shadow: none;
+    margin: 24px 0 0;
+    width: 154px;
+
+    &:hover {
+      background: white;
+      border-color: black;
+      color: black;
+    }
+  }
+}

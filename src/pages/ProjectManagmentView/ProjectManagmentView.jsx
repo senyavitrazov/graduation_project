@@ -16,7 +16,7 @@ const columns = [
     title: 'Project',
     dataIndex: 'project_title',
     key: 'project_title',
-    render: (text, record) => <Link ellipsis={true}>{text}</Link>,
+    render: (text, record) => <Link href={`projects/${record._id}`} ellipsis={true}>{text}</Link>,
     width: '20%',
   },
   {
@@ -159,7 +159,7 @@ const ProjectManagementView = () => {
           </div>
         </div>
         <Button
-          onClick={() => {navigate('../project/add')}}
+          onClick={() => {navigate('../projects/add')}}
           className={styles['add-project-button']}
           icon={<PlusOutlined/>}>Add new Project</Button>
       </Form>

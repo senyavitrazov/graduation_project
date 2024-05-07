@@ -48,7 +48,7 @@ const columns = [
     title: 'Project',
     dataIndex: 'project',
     key: 'project',
-    render: (project) => project ? <Link ellipsis={true}>{project.project_title}</Link> : null,
+    render: (project) => project ? <Link href={`projects/${project._id}`} ellipsis={true}>{project.project_title}</Link> : null,
     responsive: ['xl']
   },
   {

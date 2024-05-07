@@ -100,7 +100,7 @@ const AddProjectForm = () => {
               message.error('Creation was canceled');
             }
               }>Cancel</Button>
-            <Button type="primary" style={{background: '#D31C40', boxShadow: 'none'}} htmlType="submit">Create</Button>
+            <Button type="primary" id={styles['create-button']} htmlType="submit">Create</Button>
           </div>
         </Form>
       </PageContainer>

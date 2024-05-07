@@ -1,0 +1,40 @@
+@import '../../styles/abstracts/constants';
+
+.container {
+  width: 100%;
+  background: white;
+  padding: 16px 24px;
+  margin-top: 24px;
+  .metainfo {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    
+    .btn-container {
+      display: flex;
+      gap: 8px;
+    }
+  }
+    .list-of-users {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      p {
+        font-size: 1.4rem;
+      }
+    }
+  
+    .description {
+      font-size: 1.4rem;
+    }
+}
+
+#edit-button {
+  box-shadow: none;
+
+  &:hover {
+    background: white;
+    border-color: black;
+    color: black;
+  }
+}

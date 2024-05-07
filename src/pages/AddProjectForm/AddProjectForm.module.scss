@@ -1,3 +1,5 @@
+@import '../../styles/abstracts/constants';
+
 .page-container {
   display: flex;
   flex-direction: column;
@@ -6,10 +8,21 @@
   .form {
     margin-top: 24px;
     width: 40%;
+    min-width: 700px;
     .button-container {
       display: flex;
       justify-content: end;
       gap: 16px;
+    }
+  }
+
+  #create-button {
+    background: $red-color;
+    box-shadow: none;
+    &:hover {
+      background: white;
+      border-color: black;
+      color: black;
     }
   }
 }
