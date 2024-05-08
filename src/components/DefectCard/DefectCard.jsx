@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styles from './DefectCard.module.scss';
 import CardTitle from '../CardTitle/CardTitle';
+import Cookies from 'universal-cookie';
 import { CommentOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { Badge, Button, Tag, Timeline, Typography } from 'antd';
+import { Badge, Button, Input, Modal, Tag, Timeline, Typography } from 'antd';
+import { GlobalContext } from '../../App';
+import { LoadingOutlined } from '@ant-design/icons';
 
 function getBadgeStatus(type_of_state) {
   switch (type_of_state) {
@@ -34,39 +37,144 @@ function getSeverityColor(severity) {
 
 //const timelineItems = {[]};
 
-const DefectCard = ({defect, ...props}) => {
+function formatDate(timestamp) {
+  const date = new Date(timestamp);
+
+  const year = date.getFullYear();
+  const month = ("0" + (date.getMonth() + 1)).slice(-2);
+  const day = ("0" + date.getDate()).slice(-2);
+  const hours = ("0" + date.getHours()).slice(-2);
+  const minutes = ("0" + date.getMinutes()).slice(-2);
+  const seconds = ("0" + date.getSeconds()).slice(-2);
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+const DefectCard = ({...props}) => {
   const navigate = useNavigate();
+  const { serverUrl } = useContext(GlobalContext);
+  const [defect, setDefect] = useState(props.defect)
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [textOfComment, setTextOfComment] = useState('');
   const [status, setStatus] = useState(defect.current_state.type_of_state);
+  const cookies = new Cookies();
 
-
-  const status_list = ['open', 'in_progress', 'fixed'];
-
-  const handleStatusChange = () => {
-    switch (status) {
-      case 'open':
-        setStatus('in_progress');
-        break;
-      case 'in_progress':
-        setStatus('fixed');
-        break;
-      case 'fixed':
-        setStatus('archived');
-        break;
-      case 'archived':
-        setStatus('open');
-        break;
-      default:
-        break;
+  const fetchDefect = async (id) => {
+    try {
+      const url = `${serverUrl}/defects/${defect._id}`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const updatedDefect = await response.json();
+      setDefect(updatedDefect);
+    } catch (error) {
+      console.error('Error fetching defect:', error);
     }
+  }
+
+  const sendCommentToServer = (comment) => {
+    setConfirmLoading(true);
+    let url = `${serverUrl}/defects/${defect._id}`;
+    fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          logs: {
+            ...defect.logs,
+            list_of_comments: [...defect.logs.list_of_comments, comment],
+          }
+        }),
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        setConfirmLoading(false);
+        fetchDefect();
+        return response.json();
+    })
+    .catch(error => {
+        console.error(error);
+        setConfirmLoading(false);
+    });
   };
 
+
+  useEffect(() => {
+    const statusObj = {
+      date: formatDate(Date.now()),
+      type_of_state: status,
+    };
+  
+    const updateStatusOnServer = async () => {
+      try {
+        const url = `${serverUrl}/defects/${defect._id}`;
+        const response = await fetch(url, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            current_state: statusObj,
+            logs: {
+              ...defect.logs,
+              list_of_states: [...defect.logs.list_of_states, statusObj],
+            }
+          }),
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        console.log('Status updated successfully on: ', status);
+        fetchDefect();
+      } catch (error) {
+        console.error('Error updating status:', error);
+      }
+    };
+    if (status !== defect.current_state.type_of_state) {
+      updateStatusOnServer();
+    }
+  }, [status]);
+
+  
+
+  const handleStatusChange = () => {
+    if (status === 'open') {
+      setStatus('in_progress');
+    } else {
+      setStatus('fixed');
+    }
+  };
   const getNextStatus = () => {
+    const status_list = ['open', 'in_progress', 'fixed'];
     const nextStatus = status_list[status_list.findIndex(s => s === status) + 1];
     if (nextStatus === 'fixed') return 'Set to fixed' 
     if (nextStatus === 'in_progress') return 'Set in progress'
     return 'Open'
   };
+
+  const handleOk = async () => {
+    sendCommentToServer(
+      {
+        commenter: cookies.get('userId'),
+        text_of_comment: textOfComment, 
+      }
+    );
+    setTextOfComment('');
+    setOpen(false);
+  };
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
 
   return (
     <div className={styles['container']}>
@@ -90,7 +198,7 @@ const DefectCard = ({defect, ...props}) => {
               )}
             </>
           )}
-          <Button type="default" htmlType="button" icon={<CommentOutlined/>}>Comment</Button>
+          <Button type="default" htmlType="button" icon={<CommentOutlined/>} onClick={() => {setOpen(true)}}>Comment</Button>
         </div>
       </div>
       <div className={styles['char-container']}>
@@ -113,6 +221,21 @@ const DefectCard = ({defect, ...props}) => {
           {defect ? defect.description : 'Loading...'}
         </Typography.Paragraph>
         <Timeline/>
+        <Modal
+          title="Comment"
+          centered
+          open={open}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          okText={confirmLoading ? <LoadingOutlined/> : "Save"}
+          cancelText="Cancel"
+        >
+        <Input.TextArea
+          value={textOfComment}
+          onChange={(e) => setTextOfComment(e.target.value)}
+          autoSize={{ minRows: 10, maxRows: 20 }}
+          style={{height: '180px'}}/>
+        </Modal>
     </div>
   );
 };

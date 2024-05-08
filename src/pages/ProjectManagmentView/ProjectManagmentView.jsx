@@ -101,7 +101,7 @@ const ProjectManagementView = () => {
   const [isCategoryArchived, setCategoryArchived] = useState('active');
   const { serverUrl } = useContext(GlobalContext);
    const navigate = useNavigate();
-  const sizeOfPage = 11; 
+  const sizeOfPage = 12; 
 
   const fetchData = (page, pageSize, query = '') => {
     setLoading(true);
@@ -165,7 +165,7 @@ const ProjectManagementView = () => {
       </Form>
       <Table
         rowKey={e => e._id}
-        scroll={{ y: 627 }}
+        scroll={{ y: 672 }}
         className={styles.table}
         loading={loading} 
         columns={columns}

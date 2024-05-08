@@ -4,7 +4,12 @@ import { useNavigate } from "react-router-dom";
 import RoundedButton from "../../components/RoundedButton/RoundedButton";
 import ErrorMessage from "../../components/errorMessage/errorMessage";
 import { GlobalContext } from '../../App';
+import Cookies from 'universal-cookie';
 import './SignInSignUp.scss';
+
+
+const expirationDate = new Date();
+expirationDate.setMonth(expirationDate.getMonth() + 1);
 
 
 const SignInSingUp = props => {
@@ -18,11 +23,19 @@ const SignInSingUp = props => {
   const [error, setError] = useState(null);
   const { serverUrl } = useContext(GlobalContext);
   const navigate = useNavigate();
+  const cookies = new Cookies();
 
   const isInputValid = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/g.test(inputValue);
   const isConfirmPasswordValid = isSignUpMode
     ? confirmPassword === inputValue
     : true;
+
+  useEffect(() => {
+    const userId = cookies.get('userId');
+    if (userId) {
+      handleLogin();
+    }
+  }, []);
 
   useEffect(() =>  {
     isSignUpFieldsValid && setSignUpFieldsValid(false);
@@ -31,7 +44,7 @@ const SignInSingUp = props => {
 
   const handleLogin = () => {
     props.onLogin();
-    navigate('/defects');
+    navigate('/');
   };
   
   const loginButtonHandler = async () => {
@@ -45,7 +58,13 @@ const SignInSingUp = props => {
           password: inputValue,
         },
       });
-      profile instanceof Error ?  setError(profile) : handleLogin();
+      if (profile instanceof Error) {
+        setError(profile)
+      } else {
+        console.log(profile);
+        cookies.set('userId', profile._id, { path: '/', expires: expirationDate });
+        handleLogin();
+      }
     } else {
       setIsSignUpMode(!isSignUpMode);
     }
@@ -65,7 +84,9 @@ const SignInSingUp = props => {
               password: inputValue
             },
           }]
-        }).then(() => {
+        }).then((response) => {
+            console.log(response);
+            cookies.set('userId', response[0]._id, { path: '/', expires: expirationDate });
             handleLogin()
           })
           .catch((err) => {
@@ -78,7 +99,7 @@ const SignInSingUp = props => {
     } else {
       setIsSignUpMode(!isSignUpMode);
     }
-};
+  };
 
   const handleInputChange = (e) => {
     const value = e.target.value;

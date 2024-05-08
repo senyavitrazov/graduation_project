@@ -7,7 +7,7 @@ import { GlobalContext } from '../../App';
 import { useParams } from 'react-router-dom';
 import ProjectCard from '../../components/ProjectCard/ProjectCard';
 import { LoadingOutlined } from '@ant-design/icons';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Button, Divider, Spin } from 'antd';
 import DefectCard from '../../components/DefectCard/DefectCard';
 
@@ -17,6 +17,7 @@ const ProjectPage = () => {
   const [loading, setLoading] = useState(true);
   const [project, setProject] = useState(null);
   const [defects, setDefects] = useState([]);
+  const [defectsExpanded, setDefectsExpanded] = useState(false);
 
    const fetchData = () => {
     setLoading(true);
@@ -46,9 +47,11 @@ const ProjectPage = () => {
 
   useEffect(() => {
     fetchData();
-    console.log(project);
   }, [project_id]);
 
+  const toggleDefectsExpanded = () => {
+    setDefectsExpanded(!defectsExpanded);
+  };
 
   return (
     <PageWrapper className={styles['wrapper']}>
@@ -67,11 +70,22 @@ const ProjectPage = () => {
           >
             Add new Defect
           </Button>
-        <Divider style={{margin: '30px 0'}}>Defect Scope ({defects.length})</Divider>
-        {loading ? (
-            <Spin className={styles['spiner']} indicator={<LoadingOutlined spin />} />
-          ) : (
-            defects.length > 0 ? defects.map((e, i) => (<DefectCard key={i} defect={e}/>)) : 'zero defects'
+          {defects.length > 0 && (
+            <div className={styles['active-scope']}>
+              <Divider style={{margin: '30px 0', userSelect: 'none', cursor: 'pointer'}} onClick={toggleDefectsExpanded}>
+                Active Scope ({defects.length})
+                {defectsExpanded 
+                  ? <UpOutlined style={{fontSize: '1.2rem', marginLeft: 4}}/> 
+                  : <DownOutlined style={{fontSize: '1.2rem', marginLeft: 4}}/>}
+              </Divider>
+              {defectsExpanded && (
+                loading ? (
+                  <Spin className={styles['spiner']} indicator={<LoadingOutlined spin />} />
+                ) : (
+                  defects.map((e, i) => (<DefectCard key={i} defect={e}/>))
+                )
+              )}
+            </div>
           )}
         </div>
       </PageContainer>

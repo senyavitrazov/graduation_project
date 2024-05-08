@@ -65,6 +65,7 @@ electronIpcMain.handle('duplex-profiles-channel', async (e, data) => {
     //const  profiles = await importProfiles();
     switch (data.action) {
       case 'search':
+        const errObj = {cause: { login: true, password: false },};
         const profilesResponse = await fetch(data.url + "/users");
         const profiles = await profilesResponse.json();
         const profile = profiles.find(obj => (obj.credentials.login === data.credentials.login));
@@ -72,13 +73,12 @@ electronIpcMain.handle('duplex-profiles-channel', async (e, data) => {
         if (profile.credentials.hash_of_password) {
           //console.log(data.credentials.password, profile.credentials.password);
           return (
-            (await bcrypt.compare(
+            ((await bcrypt.compare(
               data.credentials.password,
               profile.credentials.hash_of_password
-            )) ||
-            new Error("Invalid password", {
-              cause: { login: true, password: false },
-            })
+            ))
+              ? profile
+              : errObj) || new Error("Invalid password", errObj)
           );
         }
         return null;
@@ -119,8 +119,8 @@ electronIpcMain.handle('duplex-profiles-channel', async (e, data) => {
                 body: JSON.stringify(newUsers),
               }
             );
-            resolve(null);
-            console.log(saveProfilesResponse);
+            const response = await saveProfilesResponse.json();
+            resolve(response);
             /*exportProfilesArray(newProfiles || null)
               .then((result) => {
                 resolve(null);
