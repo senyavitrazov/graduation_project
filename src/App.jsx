@@ -12,8 +12,8 @@ export const GlobalContext = createContext();
 function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const serverUrl = 'http://localhost:5555';
-  const devMode = true;
   const cookies = new Cookies();
+  const devMode = true;
 
   const PrivateWrapper = ({ ...rest }) => {
     return (cookies.get('userId') || isLoggedIn || devMode) 
@@ -32,6 +32,9 @@ function App() {
         defaultShadow: 'none',
         primaryShadow: 'none',   
       },
+      message: {
+        top: '10vh',
+      }
     }
   };
 

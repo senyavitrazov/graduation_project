@@ -48,9 +48,9 @@ const Pagination = props => {
       >
         <div className={classnames(styles.arrow, styles.left)} />
       </li>
-      {paginationRange.map(pageNumber => {
+      {paginationRange.map((pageNumber, i) => {
         if (pageNumber === DOTS) {
-          return <li className={classnames(styles["pagination-item"], styles['dots'])}>&#8230;</li>;
+          return <li key={i} className={classnames(styles["pagination-item"], styles['dots'])}>&#8230;</li>;
         }
 
         return (

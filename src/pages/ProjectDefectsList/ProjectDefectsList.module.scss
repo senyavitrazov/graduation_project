@@ -1,0 +1,23 @@
+.spiner {
+  margin: 24px 0;
+  display: flex;
+  height: 162px;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-defect-button {
+  box-shadow: none;
+  margin: 24px 0 0;
+  width: 154px;
+
+  &:hover {
+    background: white;
+    border-color: black;
+    color: black;
+  }
+}
+
+.group-container {
+  width: 100%;
+}

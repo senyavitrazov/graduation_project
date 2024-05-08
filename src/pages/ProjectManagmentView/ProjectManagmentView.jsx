@@ -52,7 +52,6 @@ const columns = [
         })}
       </div>
     ),
-
   },
   {
     title: 'Added',
@@ -80,7 +79,7 @@ function calculateProgressAndTasksExistence(tasks) {
                 completedWeight += 0;
             } else if (state === "in_progress") {
                 completedWeight += 1;
-            } else if (state === "fixed") {
+            } else if (state === "fixed" || state === "archived") {
                 completedWeight += 2;
             }
         }
@@ -164,6 +163,7 @@ const ProjectManagementView = () => {
           icon={<PlusOutlined/>}>Add new Project</Button>
       </Form>
       <Table
+        key={'project-table'}
         rowKey={e => e._id}
         scroll={{ y: 672 }}
         className={styles.table}

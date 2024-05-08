@@ -1,5 +1,12 @@
 @import '../../styles/abstracts/constants';
 
+:global(.ant-timeline-item-last) {
+  height: 36px;
+}
+:global(.ant-timeline-item) {
+  height: 36px;
+}
+
 .container {
   width: 100%;
   background: white;

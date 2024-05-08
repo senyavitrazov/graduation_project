@@ -24,10 +24,6 @@ const AddProjectForm = () => {
     }));
   }
 
-  message.config({
-    top: '10vh',
-  });
-
   const handleSubmit = async (values) => {
     try {
       const response = await fetch(`${serverUrl}/projects`, {

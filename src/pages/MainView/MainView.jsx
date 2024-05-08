@@ -40,7 +40,7 @@ const MainView = () => {
         <Route key={'defects-route'} path="/" element={<DefectManagmentView/>} />
         <Route key={'projects-route'} path="projects" element={<ProjectManagementView/>} />
         <Route key={'projects-add'} path="projects/add" element={<AddProjectForm/>} />
-        <Route key={'projects-add'} path="projects/:id" element={<ProjectPage/>} />
+        <Route key={'project'} path="projects/:id/*" element={<ProjectPage/>} />
       </Routes>
     </div>
   );

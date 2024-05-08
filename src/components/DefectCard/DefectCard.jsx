@@ -35,7 +35,26 @@ function getSeverityColor(severity) {
   }
 }
 
-//const timelineItems = {[]};
+function transformLogsToItems(logs) {
+    const combinedLogs = [...logs.list_of_comments, ...logs.list_of_states];
+    combinedLogs.sort((a, b) => new Date(a.date) - new Date(b.date));
+    const items = combinedLogs.map((log, index) => {
+        let item = {};
+        const date = new Date(log.date);
+        const formattedDate = date.toISOString().split('T')[0];
+        if (index === 0) {
+            item.children = `${formattedDate} Defect was created`;
+        } else if (log.text_of_comment) {
+            item.children = `${formattedDate} ${log.text_of_comment}`;
+            item.color = 'grey';
+        } else if (log.type_of_state) {
+            item.children = `${formattedDate} Defect state changed to ${log.type_of_state}`;
+        }
+        return item;
+    });
+    return items;
+}
+
 
 function formatDate(timestamp) {
   const date = new Date(timestamp);
@@ -50,7 +69,7 @@ function formatDate(timestamp) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-const DefectCard = ({...props}) => {
+const DefectCard = ({onUpdate, ...props}) => {
   const navigate = useNavigate();
   const { serverUrl } = useContext(GlobalContext);
   const [defect, setDefect] = useState(props.defect)
@@ -75,6 +94,7 @@ const DefectCard = ({...props}) => {
       }
       const updatedDefect = await response.json();
       setDefect(updatedDefect);
+      onUpdate(updatedDefect);
     } catch (error) {
       console.error('Error fetching defect:', error);
     }
@@ -113,7 +133,6 @@ const DefectCard = ({...props}) => {
       date: formatDate(Date.now()),
       type_of_state: status,
     };
-  
     const updateStatusOnServer = async () => {
       try {
         const url = `${serverUrl}/defects/${defect._id}`;
@@ -220,7 +239,7 @@ const DefectCard = ({...props}) => {
         >
           {defect ? defect.description : 'Loading...'}
         </Typography.Paragraph>
-        <Timeline/>
+        <Timeline items={transformLogsToItems(defect.logs)} style={{marginTop: 36}}/>
         <Modal
           title="Comment"
           centered
