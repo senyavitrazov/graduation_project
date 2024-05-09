@@ -6,7 +6,11 @@ const {
 contextBridge.exposeInMainWorld(
     "contextBridgeApi", {
         send: (channel, data) => {
-            let validChannels = ['trafficlight-channel', 'export-profiles-channel'];
+            let validChannels = [
+              "trafficlight-channel",
+              "export-profiles-channel",
+              "url-channel",
+            ];
             if (validChannels.includes(channel)) {
                 ipcRenderer.send(channel, data);
             }

@@ -1,11 +1,16 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ConfigProvider, Select, Spin } from "antd";
 import debounce from "lodash/debounce";
 
-export const DebounceSelect = ({ fetchOptions, debounceTimeout = 800, ...props }) => {
+export const DebounceSelect = ({ fetchOptions, debounceTimeout = 800, initialValue = [], onChange, ...props }) => {
   const [fetching, setFetching] = useState(false);
   const [options, setOptions] = useState([]);
+  const [value, setValue] = useState(initialValue);
   const fetchRef = useRef(0);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, []);
 
   const debounceFetcher = useMemo(() => {
     const loadOptions = (value) => {
@@ -40,6 +45,11 @@ export const DebounceSelect = ({ fetchOptions, debounceTimeout = 800, ...props }
         onSearch={debounceFetcher}
         notFoundContent={fetching ? <Spin size="small" /> : null}
         {...props}
+        value={value}
+        onChange={(newValue) => {
+          setValue(newValue);
+          onChange(newValue);
+        }}
         options={options}
       />
     </ConfigProvider>

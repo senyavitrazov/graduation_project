@@ -1,6 +1,6 @@
 @import '../../styles/abstracts/constants';
 
-.page-container {
+.page-container, .page-container-edit {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,4 +28,8 @@
       color: black;
     }
   }
+}
+
+.page-container-edit { 
+  overflow-y: hidden;
 }

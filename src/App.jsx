@@ -13,7 +13,7 @@ function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const serverUrl = 'http://localhost:5555';
   const cookies = new Cookies();
-  const devMode = true;
+  const devMode = false;
 
   const PrivateWrapper = ({ ...rest }) => {
     return (cookies.get('userId') || isLoggedIn || devMode) 

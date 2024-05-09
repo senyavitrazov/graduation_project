@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { Button, Form, Input, message} from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Divider, Form, Input, message} from 'antd';
 import PageWrapper from '../../components/wrappers/PageWrapper/PageWrapper';
 import PageHeader from '../../components/PageHeader/PageHeader';
 import PageContainer from '../../components/wrappers/PageContainer/PageContainer';
@@ -9,12 +9,31 @@ import styles from './AddProjectForm.module.scss';
 import { useNavigate } from 'react-router-dom';
 
 
-const AddProjectForm = () => {
+const AddProjectForm = ({ project, onEditProject }) => {
   const { serverUrl } = useContext(GlobalContext);
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [usersLoaded, setUsersLoaded] = useState(false);
   const navigate = useNavigate();
   const [form] = Form.useForm();
   
+  useEffect(() => {
+    if (project) {
+      form.setFieldsValue({
+        title: project.project_title,
+        description: project.description,
+      });
+      setSelectedUsers(project.list_of_users_with_access.map(user => ({ label: user.credentials.login, value: user._id })));
+    }
+    if (!usersLoaded) {
+      setUsersLoaded(true);
+    }
+  }, [project]);
+
+  useEffect(()=>{
+    console.log(selectedUsers);
+  }, [selectedUsers])
+
   async function fetchUserList(username) {
     const response = await fetch(`${serverUrl}/users?login=${username}`);
     const data = await response.json();
@@ -25,9 +44,16 @@ const AddProjectForm = () => {
   }
 
   const handleSubmit = async (values) => {
+    setLoading(true);
     try {
-      const response = await fetch(`${serverUrl}/projects`, {
-        method: 'POST',
+      let url = `${serverUrl}/projects`;
+      let method = 'POST';
+      if (project) {
+        url = `${serverUrl}/projects/${project._id}`;
+        method = 'PATCH';
+      }
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -38,26 +64,36 @@ const AddProjectForm = () => {
         }),
       });
       if (response.ok) {
-        message.success('Project created successfully!');
+        console.log(response);
+        message.success(project ? 'Project updated successfully!' : 'Project created successfully!');
         form.resetFields();
         setSelectedUsers([]);
+        if (onEditProject) {
+          onEditProject();
+        }
       } else {
-        message.error('Failed to create project');
+        console.log(response);
+        message.error(project ? 'Failed to update project' : 'Failed to create project');
       }
     } catch (error) {
-      console.error('Error creating project:', error);
-      message.error('Failed to create project');
+      console.error('Error creating/updating project:', error);
+      message.error(project ? 'Failed to update project' : 'Failed to create project');
+    } finally {
+      setLoading(false);
+      navigate(-1);
     }
   };
 
   return (
     <PageWrapper>
-      <PageHeader backButton={true}>Add new Project</PageHeader>
-      <PageContainer className={styles['page-container']}>
-        <Form 
-          layout="vertical" 
+      {!project 
+        ? (<PageHeader backButton={true}>{project ? 'Edit Project' : 'Add New Project'}</PageHeader>) 
+        : (<Divider children={'Edit Project'}/>)}
+      <PageContainer className={!project ? styles['page-container'] : styles['page-container-edit']}>
+        <Form
+          layout="vertical"
           form={form}
-          onFinish={handleSubmit} 
+          onFinish={handleSubmit}
           className={styles['form']}
         >
           <Form.Item
@@ -71,32 +107,34 @@ const AddProjectForm = () => {
             label="Description"
             name="description"
           >
-            <Input.TextArea style={{height: '120px'}}/>
+            <Input.TextArea style={{ height: '120px' }} />
           </Form.Item>
-          <Form.Item
-            label="Set a defect access for users"
-            name="searchUsers"
-          >
-            <DebounceSelect
-              mode="multiple"
-              value ={selectedUsers}
-              placeholder="Select users"
-              fetchOptions={fetchUserList}
-              onChange={(newValue) => {
-                setSelectedUsers(newValue);
-              }}
-              style={{
-                width: "100%",
-              }}
-            />
-          </Form.Item>
+          {(usersLoaded) && (
+            <Form.Item
+              label="Set a defect access for users"
+              name="searchUsers"
+            >
+              <DebounceSelect
+                mode="multiple"
+                initialValue={selectedUsers}
+                placeholder="Select users"
+                fetchOptions={fetchUserList}
+                onChange={(newValue) => {
+                  setSelectedUsers(newValue);
+                }}
+                style={{
+                  width: "100%",
+                }}
+              />
+            </Form.Item>
+          )}
           <div className={styles['button-container']}>
             <Button type="default" htmlType="button" onClick={() => {
-              navigate(-1)
-              message.error('Creation was canceled');
+              navigate(-1);
+              message.error('Operation was canceled');
             }
-              }>Cancel</Button>
-            <Button type="primary" id={styles['create-button']} htmlType="submit">Create</Button>
+            }>Cancel</Button>
+            <Button type="primary" id={styles['create-button']} htmlType="submit" loading={loading}>{project ? 'Update' : 'Create'}</Button>
           </div>
         </Form>
       </PageContainer>

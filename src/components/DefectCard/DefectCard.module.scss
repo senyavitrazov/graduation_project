@@ -1,10 +1,11 @@
 @import '../../styles/abstracts/constants';
 
-:global(.ant-timeline-item-last) {
-  height: 36px;
+:global(.ant-timeline-item-last>.ant-timeline-item-content) {
+  min-height: 0 !important;
 }
-:global(.ant-timeline-item) {
-  height: 36px;
+
+:global(.ant-timeline-item-last) {
+  padding-bottom: 0 !important;
 }
 
 .container {

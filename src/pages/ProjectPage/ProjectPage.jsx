@@ -10,6 +10,7 @@ import { GlobalContext } from '../../App';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import styles from './ProjectPage.module.scss';
+import AddProjectForm from '../AddProjectForm/AddProjectForm';
 
 const ProjectPage = () => {
   const { serverUrl } = useContext(GlobalContext);
@@ -49,9 +50,20 @@ const ProjectPage = () => {
   }, [project_id]);
 
   useEffect(() => {
-    setModifiable(location.pathname.endsWith("/add-defect") ? false : true);
+    if (location.pathname.endsWith("/add-defect") || location.pathname.endsWith("/edit")) {
+      setModifiable(false);
+    } else {
+      setModifiable(true);
+    }
   }, [location]);
 
+  
+  const handleCreateDefect = (newDefect) => {
+    setProject((prevProject) => ({
+      ...prevProject,
+      list_of_defects: [...prevProject.list_of_defects, newDefect],
+    }));
+  };
 
   return (
     <PageWrapper className={styles['wrapper']}>
@@ -64,7 +76,9 @@ const ProjectPage = () => {
             <>
               <ProjectCard project={project} modifiable={modifiable}/>
               <Routes>
-                <Route key={'projects-add-defect'} path="add-defect" element={<AddDefectForm project={project}/>}/>
+                <Route key={'projects-add-defect'} path="add-defect" element={<AddDefectForm project={project} onCreateDefect={handleCreateDefect}/>}/>
+                <Route key={'projects-add-defect'} path="edit-defect/:id" element={<AddDefectForm project={project} onCreateDefect={handleCreateDefect}/>}/>
+                <Route key={'projects-edit'} path="edit" element={<AddProjectForm project={project} onEditProject={fetchProject}/>}/>
                 <Route key={'projects'} path="/" element={<ProjectDefectsList project={project} loading={loading}/>}/>
               </Routes>
             </>

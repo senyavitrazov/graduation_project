@@ -85,7 +85,6 @@ const SignInSingUp = props => {
             },
           }]
         }).then((response) => {
-            console.log(response);
             cookies.set('userId', response[0]._id, { path: '/', expires: expirationDate });
             handleLogin()
           })

@@ -18,7 +18,7 @@ function formatDate(timestamp) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-const AddDefectForm = ({project, ...props}) => {
+const AddDefectForm = ({project, onCreateDefect, ...props}) => {
   const { serverUrl } = useContext(GlobalContext);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -34,7 +34,6 @@ const AddDefectForm = ({project, ...props}) => {
         priority: values.priority,
         project: project._id,
       };
-      console.log(defectData);
       const response = await fetch(`${serverUrl}/defects`, {
         method: 'POST',
         headers: {
@@ -43,7 +42,10 @@ const AddDefectForm = ({project, ...props}) => {
         body: JSON.stringify(defectData),
       });
       if (response.ok) {
+        const createdDefect = await response.json();
+        console.log(createdDefect.defect);
         message.success('Defect created successfully');
+        onCreateDefect(createdDefect.defect);
         navigate(-1);
       } else {
         throw new Error('Network response was not ok');
@@ -55,7 +57,6 @@ const AddDefectForm = ({project, ...props}) => {
       setLoading(false);
     }
   };
-
 
   return(
     <>

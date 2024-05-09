@@ -4,6 +4,7 @@ const electronIpcMain = require('electron').ipcMain;
 const isDev = app.isPackaged ? false : require('electron-is-dev');
 //const { importProfiles, exportProfiles, exportProfilesArray } = require('../src/model/profilemgr');
 const bcrypt = require('bcryptjs');
+const { shell } = require("electron");
 
 let win, defaultSession;
 
@@ -45,6 +46,11 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+electronIpcMain.on('url-channel', (e, data) => {
+  console.log(data);
+  shell.openExternal(data.url);
+})
 
 electronIpcMain.on('trafficlight-channel', (e, data) => {
   if (data.action === 'minimize') win.minimize();

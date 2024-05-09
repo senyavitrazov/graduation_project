@@ -45,7 +45,7 @@ function transformLogsToItems(logs) {
         if (index === 0) {
             item.children = `${formattedDate} Defect was created`;
         } else if (log.text_of_comment) {
-            item.children = `${formattedDate} ${log.text_of_comment}`;
+            item.children =  (<>{formattedDate} {`Commented by user ${(log.commenter || 'DevelopmentMode1')}`}<br/>{log.text_of_comment}</>);
             item.color = 'grey';
         } else if (log.type_of_state) {
             item.children = `${formattedDate} Defect state changed to ${log.type_of_state}`;
@@ -76,6 +76,7 @@ const DefectCard = ({onUpdate, ...props}) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [open, setOpen] = useState(false);
+  const [userName, setUserName] = useState(false);
   const [textOfComment, setTextOfComment] = useState('');
   const [status, setStatus] = useState(defect.current_state.type_of_state);
   const cookies = new Cookies();
@@ -121,6 +122,9 @@ const DefectCard = ({onUpdate, ...props}) => {
         fetchDefect();
         return response.json();
     })
+    .then(data => {
+      console.log('Response from server:', data);
+    })
     .catch(error => {
         console.error(error);
         setConfirmLoading(false);
@@ -133,6 +137,7 @@ const DefectCard = ({onUpdate, ...props}) => {
       date: formatDate(Date.now()),
       type_of_state: status,
     };
+
     const updateStatusOnServer = async () => {
       try {
         const url = `${serverUrl}/defects/${defect._id}`;
@@ -172,6 +177,7 @@ const DefectCard = ({onUpdate, ...props}) => {
       setStatus('fixed');
     }
   };
+
   const getNextStatus = () => {
     const status_list = ['open', 'in_progress', 'fixed'];
     const nextStatus = status_list[status_list.findIndex(s => s === status) + 1];
@@ -184,7 +190,8 @@ const DefectCard = ({onUpdate, ...props}) => {
     sendCommentToServer(
       {
         commenter: cookies.get('userId'),
-        text_of_comment: textOfComment, 
+        text_of_comment: textOfComment,
+        date: formatDate(Date.now()),
       }
     );
     setTextOfComment('');
