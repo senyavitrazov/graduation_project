@@ -7,6 +7,7 @@ import AddProjectForm from '../AddProjectForm/AddProjectForm';
 import styles from './MainView.module.scss'; 
 import ProjectPage from '../ProjectPage/ProjectPage';
 import AboutPage from '../AboutPage/AboutPage';
+import EditDefectPage from '../EditDefectPage/EditDefectPage';
 
 const items = [
   {
@@ -43,6 +44,7 @@ const MainView = () => {
         <Route key={'projects-add'} path="projects/add" element={<AddProjectForm/>} />
         <Route key={'project'} path="projects/:id/*" element={<ProjectPage/>} />
         <Route key={'about-page'} path="about" element={<AboutPage/>} />
+        <Route key={'projects-add-defect'} path="defects/:id/edit" element={<EditDefectPage/>}/>
       </Routes>
     </div>
   );

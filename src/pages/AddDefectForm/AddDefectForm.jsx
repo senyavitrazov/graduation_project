@@ -1,28 +1,27 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styles from './AddDefectForm.module.scss';
 import { Form, Input, Select, Button,  Divider, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../../App';
 const { Option } = Select;
 
-function formatDate(timestamp) {
-  const date = new Date(timestamp);
-
-  const year = date.getFullYear();
-  const month = ("0" + (date.getMonth() + 1)).slice(-2);
-  const day = ("0" + date.getDate()).slice(-2);
-  const hours = ("0" + date.getHours()).slice(-2);
-  const minutes = ("0" + date.getMinutes()).slice(-2);
-  const seconds = ("0" + date.getSeconds()).slice(-2);
-
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
-const AddDefectForm = ({project, onCreateDefect, ...props}) => {
+const AddDefectForm = ({project, onCreateDefect, defect, ...props}) => {
   const { serverUrl } = useContext(GlobalContext);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (defect) {
+      form.setFieldsValue({
+        title: defect.defect_title,
+        description: defect.description,
+        severity: defect.severity,
+        priority: defect.priority,
+      });
+    }
+  }, [defect, form]);
+
 
   const handleSubmit = async (values) => {
     setLoading(true);
@@ -32,27 +31,35 @@ const AddDefectForm = ({project, onCreateDefect, ...props}) => {
         description: values.description,
         severity: values.severity,
         priority: values.priority,
-        project: project._id,
       };
-      const response = await fetch(`${serverUrl}/defects`, {
-        method: 'POST',
+      if (!defect) defectData['project'] = project._id;
+      let url = `${serverUrl}/defects`;
+      let method = 'POST';
+      if (defect) {
+        url = `${serverUrl}/defects/${defect._id}`;
+        method = 'PATCH';
+      }
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(defectData),
       });
+
       if (response.ok) {
-        const createdDefect = await response.json();
-        console.log(createdDefect.defect);
-        message.success('Defect created successfully');
-        onCreateDefect(createdDefect.defect);
+        const updatedDefect = await response.json();
+        const action = defect ? 'updated' : 'created';
+        message.success(`Defect ${action} successfully`);
+        if (!defect) onCreateDefect(updatedDefect.defect);
         navigate(-1);
       } else {
         throw new Error('Network response was not ok');
       }
     } catch (error) {
       console.error('Error:', error);
-      message.error('Failed to create defect');
+      message.error('Failed to save defect');
     } finally {
       setLoading(false);
     }
@@ -60,7 +67,7 @@ const AddDefectForm = ({project, onCreateDefect, ...props}) => {
 
   return(
     <>
-    <Divider style={{marginTop: 24}}>New Defect</Divider>
+    <Divider style={{marginTop: 24}}>{!defect ? 'New Defect' : 'Edit Defect'}</Divider>
     <Form style={{width: '100%'}}
         form={form}
         layout="vertical"
@@ -106,10 +113,10 @@ const AddDefectForm = ({project, onCreateDefect, ...props}) => {
         <div className={styles['button-container']}>
             <Button type="default" htmlType="button" onClick={() => {
               navigate(-1)
-              message.error('Creation was canceled');
+              message.error('Action canceled');
             }
               }>Cancel</Button>
-            <Button type="primary" id={styles['create-button']} htmlType="submit" loading={loading}>Create</Button>
+            <Button type="primary" id={styles['create-button']} htmlType="submit" loading={loading}>{!defect ? 'Create' : 'Edit'}</Button>
           </div>
       </Form>
     </>

@@ -1,0 +1,22 @@
+.spiner {
+  margin-top: 7vh;
+}
+
+.content {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40%;
+    min-width: 700px;
+    padding-top: 24px;
+  }
+
+  overflow-y: scroll;
+  height: 300px;
+}

@@ -69,14 +69,13 @@ function formatDate(timestamp) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-const DefectCard = ({onUpdate, ...props}) => {
+const DefectCard = ({onUpdate, withoutTimeline, ...props}) => {
   const navigate = useNavigate();
   const { serverUrl } = useContext(GlobalContext);
   const [defect, setDefect] = useState(props.defect)
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [open, setOpen] = useState(false);
-  const [userName, setUserName] = useState(false);
   const [textOfComment, setTextOfComment] = useState('');
   const [status, setStatus] = useState(defect.current_state.type_of_state);
   const cookies = new Cookies();
@@ -246,7 +245,7 @@ const DefectCard = ({onUpdate, ...props}) => {
         >
           {defect ? defect.description : 'Loading...'}
         </Typography.Paragraph>
-        <Timeline items={transformLogsToItems(defect.logs)} style={{marginTop: 36}}/>
+        {withoutTimeline || <Timeline items={transformLogsToItems(defect.logs)} style={{marginTop: 36}}/>}
         <Modal
           title="Comment"
           centered
