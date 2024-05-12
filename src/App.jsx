@@ -1,6 +1,6 @@
 import React, { createContext, useState } from "react";
 import Header from "./components/header/header";
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import SignInSignUp from "./pages/SignInSignUp/SignInSignUp.jsx";
 import MainView from "./pages/MainView/MainView.jsx";
 import { ConfigProvider } from "antd";
@@ -14,11 +14,18 @@ function App() {
   const serverUrl = 'http://localhost:5555';
   const cookies = new Cookies();
   const devMode = false;
+  const navigate = useNavigate();
 
   const PrivateWrapper = ({ ...rest }) => {
     return (cookies.get('userId') || isLoggedIn || devMode) 
       ? <Outlet /> 
       : <Navigate to="/login" />;
+  };
+
+  const handleLogout = () => {
+    cookies.remove('userId');
+    setLoggedIn(false);
+    navigate('/');
   };
 
   const theme = {
@@ -48,7 +55,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<SignInSignUp onLogin={() => setLoggedIn(true)} />} />
               <Route element={<PrivateWrapper />}>
-                <Route path="/*" element={<MainView key={'mainview'} />} />
+                <Route path="/*" element={<MainView key={'mainview'} onLogOut={handleLogout}/>} />
               </Route>
             </Routes>
         </div>

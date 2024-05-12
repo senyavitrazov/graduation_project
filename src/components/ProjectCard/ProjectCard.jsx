@@ -23,7 +23,7 @@ const ProjectCard = ({project, modifiable, ...props}) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          is_archived: true,
+          is_archived: !project.is_archived,
         })
       });
       if (!response.ok) {
@@ -45,7 +45,7 @@ const ProjectCard = ({project, modifiable, ...props}) => {
             patchProject();
             navigate(-1);
             message.success('Added to archive');
-          }}>Archive</Button>
+          }}>{project.is_archived ? 'De-archive' : 'Archive'}</Button>
         </div>)}
       </div>
       {project.list_of_users_with_access.length > 0 ? <div className={styles['list-of-users']}>

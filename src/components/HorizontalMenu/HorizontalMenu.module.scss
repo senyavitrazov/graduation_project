@@ -1,17 +1,18 @@
 @import '../../styles/abstracts/constants';
 
-.menu-root {
+.navigation {
   width: 100%;
   margin: 0 auto;
   padding-top: 20px;
-
   position: fixed;
   display: flex;
   justify-content: center;
-  
+}
+
+.menu-root {
   background: white;
   z-index: 999;
-
+  margin: 0 auto;
   .menu-item {
     user-select: none;
     padding: 13px 20px;
@@ -46,5 +47,16 @@
       color: $red-color;
     }
   }
+}
 
+.logout {
+  padding-top: 12px;
+  margin-right: 28px;
+  > * { 
+    cursor: pointer;
+    &:hover {
+      transition: all 0.3s;
+      color: $red-color;
+    }
+  }
 }

@@ -27,7 +27,7 @@ const items = [
   },
 ];
 
-const MainView = () => {
+const MainView = ({onLogOut, ...props}) => {
   const [current, setCurrent] = useState(sessionStorage.getItem('current_page_of_nav') || 'defects');
   const onClick = (e) => setCurrent(e.key);
   
@@ -37,7 +37,7 @@ const MainView = () => {
 
   return (
     <div className={styles['main-wrapper']}>
-      <HorizontalMenu key={'horizontal-menu'} onClick={onClick} selectedKeys={[current]} items={items}></HorizontalMenu>
+      <HorizontalMenu key={'horizontal-menu'} onClick={onClick} selectedKeys={[current]} onLogOut={onLogOut} items={items}></HorizontalMenu>
       <Routes>
         <Route key={'defects-route'} path="/" element={<DefectManagmentView/>} />
         <Route key={'projects-route'} path="projects" element={<ProjectManagementView/>} />

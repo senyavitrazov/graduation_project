@@ -45,7 +45,7 @@ function transformLogsToItems(logs) {
         if (index === 0) {
             item.children = `${formattedDate} Defect was created`;
         } else if (log.text_of_comment) {
-            item.children =  (<>{formattedDate} {`Commented by user ${(log.commenter.credentials.login || 'DevelopmentMode1')}`}<br/>{log.text_of_comment}</>);
+            item.children =  (<>{formattedDate} {`Commented by user ${(log.commenter ? log.commenter.credentials.login : 'DevelopmentMode1')}`}<br/>{log.text_of_comment}</>);
             item.color = 'grey';
         } else if (log.type_of_state) {
             item.children = `${formattedDate} Defect state changed to ${log.type_of_state}`;
@@ -56,7 +56,7 @@ function transformLogsToItems(logs) {
 }
 
 
-function formatDate(timestamp) {
+export function formatDate(timestamp) {
   const date = new Date(timestamp);
 
   const year = date.getFullYear();
@@ -69,7 +69,7 @@ function formatDate(timestamp) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-const DefectCard = ({onUpdate, withoutTimeline, ...props}) => {
+const DefectCard = ({onUpdate, withoutTimeline, modifiable = true, ...props}) => {
   const navigate = useNavigate();
   const { serverUrl } = useContext(GlobalContext);
   const [defect, setDefect] = useState(props.defect)
@@ -202,10 +202,10 @@ const DefectCard = ({onUpdate, withoutTimeline, ...props}) => {
 
 
   return (
-    <div className={styles['container']}>
+    <div style={props.style} className={styles['container']}>
       <div className={styles['metainfo']}>
         <CardTitle title={defect ? defect.defect_title : 'Loading...'} />
-        <div className={styles['btn-container']}>
+        {modifiable && (<div className={styles['btn-container']}>
           <Button type="primary" id={styles['edit-button']} 
             onClick={() => { navigate('/defects/' + defect._id  + '/edit') }} htmlType="button">Edit</Button>
           {(status !== 'archived') && (
@@ -224,7 +224,7 @@ const DefectCard = ({onUpdate, withoutTimeline, ...props}) => {
             </>
           )}
           <Button type="default" htmlType="button" icon={<CommentOutlined/>} onClick={() => {setOpen(true)}}>Comment</Button>
-        </div>
+        </div>)}
       </div>
       <div className={styles['char-container']}>
         <Badge status={getBadgeStatus(defect.current_state.type_of_state)} 

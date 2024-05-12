@@ -79,6 +79,7 @@ const ProjectPage = () => {
                 <Route key={'projects-add-defect'} path="add-defect" element={<AddDefectForm project={project} onCreateDefect={handleCreateDefect}/>}/>
                 <Route key={'projects-edit'} path="edit" element={<AddProjectForm project={project} onEditProject={fetchProject}/>}/>
                 <Route key={'projects'} path="/" element={<ProjectDefectsList project={project} loading={loading}/>}/>
+                <Route key={'selected-defect'} path="/:id" element={<ProjectDefectsList project={project} loading={loading}/>}/>
               </Routes>
             </>
           )}

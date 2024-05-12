@@ -10,6 +10,7 @@ import Search from 'antd/es/input/Search';
 import Link from 'antd/es/typography/Link';
 import { DownOutlined } from '@ant-design/icons';
 import PageWrapper from '../../components/wrappers/PageWrapper/PageWrapper';
+import { formatDate } from '../../components/DefectCard/DefectCard';
 const classNames = require('classnames');
 
 function getBadgeStatus(type_of_state) {
@@ -41,7 +42,7 @@ const columns = [
     title: 'Defect',
     dataIndex: 'defect_title',
     key: 'defect',
-    render: (text, record) => <Link ellipsis={true}>{text}</Link>,
+    render: (text, record) => <Link ellipsis={true} href={record.project && `projects/${record.project._id}/${record._id}`}>{text}</Link>,
     width: '25%',
   },
   {
@@ -90,17 +91,14 @@ const menu = (record) => {
   return (
   <Menu>
     <Menu.Item key="1">
-      <a href={`/edit-defect/${record._id}`}>Edit Defect</a>
+      <a href={`/defects/${record._id}/edit`}>Edit Defect</a>
     </Menu.Item>
-    <Menu.Item key="2">
-      <a href={`/view-defect/${record._id}`}>View Defect</a>
-    </Menu.Item>
-    <Menu.Item key="3">
-      <a href={`/view-project/${record._id}`}>View Project</a>
-    </Menu.Item>
-    <Menu.Item key="4">
-      <a href={`/`}>Archive Defect</a>
-    </Menu.Item>
+    {record.project && <Menu.Item key="2">
+      <a href={`/projects/${record.project._id}/${record._id}`}>View Defect</a>
+    </Menu.Item>}
+    {record.project && <Menu.Item key="3">
+      <a href={`/projects/${record.project._id}`}>View Project</a>
+    </Menu.Item>}
   </Menu>)
 };
 
@@ -153,6 +151,7 @@ const DefectManagmentView = () => {
         console.log(error);
       });
   };
+
   return (<PageWrapper className={styles.DefectManagmentView}>
     <PageHeader subtitle={'Track defects and projects'}>Dashboard</PageHeader>
     <PageContainer className={styles.content}>

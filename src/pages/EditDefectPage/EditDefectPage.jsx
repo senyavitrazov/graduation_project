@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Divider, Spin, message } from 'antd';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { GlobalContext } from '../../App';
 import { LoadingOutlined } from '@ant-design/icons';
 import PageWrapper from '../../components/wrappers/PageWrapper/PageWrapper';
@@ -15,12 +15,23 @@ const EditDefectPage = () => {
   const { id: defect_id } = useParams();
   const [loading, setLoading] = useState(false);
   const [defect, setDefect] = useState(null);
+  const [modifiable, setModifiable] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     if (defect_id) {
       fetchDefect(defect_id);
     }
   }, [defect_id]);
+
+  useEffect(() => {
+    if (location.pathname.endsWith("/edit")) {
+      setModifiable(false);
+    } else {
+      setModifiable(true);
+    }
+  }, [location]);
+
 
   const fetchDefect = (id) => {
   setLoading(true);
@@ -48,7 +59,7 @@ const EditDefectPage = () => {
           {loading ? (
             <Spin className={styles['spiner']} indicator={<LoadingOutlined spin />} />
           ) : (
-            defect && <DefectCard defect={defect} withoutTimeline={true}/>
+            defect && <DefectCard defect={defect} modifiable={modifiable} withoutTimeline={true}/>
           )}
         <AddDefectForm defect={defect}></AddDefectForm>
         </div>
