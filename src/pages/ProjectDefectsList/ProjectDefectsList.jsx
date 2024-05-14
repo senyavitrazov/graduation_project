@@ -9,7 +9,7 @@ const ProjectDefectsList = ({project, loading, ...props}) => {
   const [activeDefects, setActiveDefects] = useState([]);
   const [archivedDefects, setArchivedDefects] = useState([]);
   const [defects, setDefects] = useState(project ? project.list_of_defects : []);
-  let { id: selected_id } = useParams();
+  let { defect_id: selected_id } = useParams();
   const navigate = useNavigate();
 
   const [activeDefectsExpanded, setActiveDefectsExpanded] = useState(false);

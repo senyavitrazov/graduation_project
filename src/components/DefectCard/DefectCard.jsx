@@ -45,7 +45,7 @@ function transformLogsToItems(logs) {
         if (index === 0) {
             item.children = `${formattedDate} Defect was created`;
         } else if (log.text_of_comment) {
-            item.children =  (<>{formattedDate} {`Commented by user ${(log.commenter ? log.commenter.credentials.login : 'DevelopmentMode1')}`}<br/>{log.text_of_comment}</>);
+            item.children =  (<>{formattedDate} {`Commented by user ${(log.commenter.credentials ? log.commenter.credentials.login : 'You')}`}<br/>{log.text_of_comment}</>);
             item.color = 'grey';
         } else if (log.type_of_state) {
             item.children = `${formattedDate} Defect state changed to ${log.type_of_state}`;
