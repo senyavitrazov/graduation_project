@@ -39,6 +39,13 @@ const ProjectDefectsList = ({project, loading, ...props}) => {
     setDefects(defects.map(defect =>
       defect._id === updatedDefect._id ? updatedDefect : defect
     ));
+
+    const activeDefectsList = defects.filter(defect => defect.current_state.type_of_state !== 'archived');
+    const archivedDefectsList = defects.filter(defect => defect.current_state.type_of_state === 'archived');
+  
+    setActiveDefects(activeDefectsList);
+    setArchivedDefects(archivedDefectsList);
+
   };
 
   return(

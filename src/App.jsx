@@ -24,6 +24,7 @@ function App() {
 
   const handleLogout = () => {
     cookies.remove('userId');
+    cookies.remove('userLogin');
     setLoggedIn(false);
     navigate('/');
   };

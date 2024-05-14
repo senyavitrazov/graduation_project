@@ -35,7 +35,7 @@ function getSeverityColor(severity) {
   }
 }
 
-function transformLogsToItems(logs) {
+function transformLogsToItems(logs, currentLogin) {
     const combinedLogs = [...logs.list_of_comments, ...logs.list_of_states];
     combinedLogs.sort((a, b) => new Date(a.date) - new Date(b.date));
     const items = combinedLogs.map((log, index) => {
@@ -45,7 +45,10 @@ function transformLogsToItems(logs) {
         if (index === 0) {
             item.children = `${formattedDate} Defect was created`;
         } else if (log.text_of_comment) {
-            item.children =  (<>{formattedDate} {`Commented by user ${(log.commenter.credentials ? log.commenter.credentials.login : 'You')}`}<br/>{log.text_of_comment}</>);
+            item.children =  (<>{formattedDate} {`Commented by user ${(log.commenter 
+              ? (log.commenter.credentials ? log.commenter.credentials.login : currentLogin)
+              : 'developer')}`}<br/>
+            {log.text_of_comment}</>);
             item.color = 'grey';
         } else if (log.type_of_state) {
             item.children = `${formattedDate} Defect state changed to ${log.type_of_state}`;
@@ -79,6 +82,7 @@ const DefectCard = ({onUpdate, withoutTimeline, modifiable = true, ...props}) =>
   const [textOfComment, setTextOfComment] = useState('');
   const [status, setStatus] = useState(defect.current_state.type_of_state);
   const cookies = new Cookies();
+  const currentLogin = cookies.get('userLogin');
 
   const fetchDefect = async (id) => {
     try {
@@ -245,7 +249,7 @@ const DefectCard = ({onUpdate, withoutTimeline, modifiable = true, ...props}) =>
         >
           {defect ? defect.description : 'Loading...'}
         </Typography.Paragraph>
-        {withoutTimeline || <Timeline items={transformLogsToItems(defect.logs)} style={{marginTop: 36}}/>}
+        {withoutTimeline || <Timeline items={transformLogsToItems(defect.logs, currentLogin)} style={{marginTop: 36}}/>}
         <Modal
           title="Comment"
           centered
