@@ -71,6 +71,7 @@ const SignInSingUp = props => {
         }
       } catch (error) {
         setError(error);
+        console.log(error);
       }
     } else {
       setIsSignUpMode(!isSignUpMode);

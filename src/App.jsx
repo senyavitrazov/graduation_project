@@ -61,10 +61,10 @@ function App() {
   const handleLogout = () => {
     setLoggedIn(false);
     AuthService.logout();
-    cookies.remove('user');
-    cookies.remove('isAuth');
-    cookies.remove('token');
-    cookies.remove('refreshToken');
+    cookies.remove('user', { path: '/' });
+    cookies.remove('isAuth', { path: '/' });
+    cookies.remove('token', { path: '/' });
+    cookies.remove('refreshToken', { path: '/' });
     navigate('/login');
   };
 

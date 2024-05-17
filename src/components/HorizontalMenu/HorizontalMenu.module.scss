@@ -50,13 +50,29 @@
 }
 
 .logout {
-  padding-top: 12px;
   margin-right: 28px;
-  > * { 
+  > *:not(p) { 
     cursor: pointer;
     &:hover {
       transition: all 0.3s;
       color: $red-color;
     }
   }
+}
+
+.container {
+  right: 0;
+  position: absolute;
+  padding-top: 12px;
+  display: flex;
+}
+
+.username {
+  display: inline-block;
+  font-size: 1.4rem;
+  user-select: none;
+  width: 80px;
+  margin-right: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

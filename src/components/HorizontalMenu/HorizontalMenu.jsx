@@ -3,9 +3,11 @@ import classNames from 'classnames';
 import styles from './HorizontalMenu.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { LogoutOutlined } from '@ant-design/icons';
+import Cookies from 'universal-cookie';
 
 const HorizontalMenu = ({ onClick, selectedKeys, onLogOut, items }) => {
   const navigate = useNavigate();
+  const cookie = new Cookies();
 
   const handleClick = (key, url, event) => {
     sessionStorage.setItem('current_page_of_nav', key)
@@ -46,7 +48,10 @@ const HorizontalMenu = ({ onClick, selectedKeys, onLogOut, items }) => {
           renderMenuItem(item)
         ))}
       </ul>
-      <div className={styles['logout']}><LogoutOutlined onClick={onLogOut} style={{fontSize: 20}}/></div>
+      <div className={styles['container']}>
+        <p className={styles['username']}>{cookie.get('user').credentials?.login}</p>
+        <div className={styles['logout']}><LogoutOutlined onClick={onLogOut} style={{fontSize: 20}}/></div>
+      </div>
     </div>
   );
 };
