@@ -7,6 +7,7 @@ import { DebounceSelect } from './UserSelect';
 import { GlobalContext } from '../../App';
 import styles from './AddProjectForm.module.scss';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'universal-cookie';
 
 
 const AddProjectForm = ({ project, onEditProject }) => {
@@ -16,6 +17,8 @@ const AddProjectForm = ({ project, onEditProject }) => {
   const [usersLoaded, setUsersLoaded] = useState(false);
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const cookies = new Cookies();
+  const current_user = cookies.get('user');
   
   useEffect(() => {
     if (project) {
@@ -23,7 +26,9 @@ const AddProjectForm = ({ project, onEditProject }) => {
         title: project.project_title,
         description: project.description,
       });
-      setSelectedUsers(project.list_of_users_with_access.map(user => ({ label: user.credentials.login, value: user._id })));
+      setSelectedUsers(project.list_of_users_with_access.map(
+        user => ({ label: user.credentials.login, value: user._id })
+      ));
     }
     if (!usersLoaded) {
       setUsersLoaded(true);
@@ -52,6 +57,16 @@ const AddProjectForm = ({ project, onEditProject }) => {
         url = `${serverUrl}/projects/${project._id}`;
         method = 'PATCH';
       }
+
+      let updatedUsers = [...selectedUsers];
+      console.log('before update', updatedUsers);
+      if (updatedUsers.length < 1) {
+        updatedUsers = [{ value: current_user.id }];
+      } else if (!updatedUsers.some(user => user.value === current_user.id)) {
+        updatedUsers.push({ value: current_user.id });
+      }
+
+      console.log('before response', updatedUsers);
       const response = await fetch(url, {
         method,
         headers: {
@@ -60,12 +75,14 @@ const AddProjectForm = ({ project, onEditProject }) => {
         body: JSON.stringify({
           project_title: values.title,
           description: values.description,
-          list_of_users_with_access: selectedUsers.map(e => e.value),
+          list_of_users_with_access: updatedUsers.map(e => e.value),
         }),
       });
       if (response.ok) {
         console.log(response);
-        message.success(project ? 'Project updated successfully!' : 'Project created successfully!');
+        message.success(project 
+          ? 'Project updated successfully!' 
+          : 'Project created successfully!');
         form.resetFields();
         setSelectedUsers([]);
         if (onEditProject) {

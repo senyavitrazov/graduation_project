@@ -10,6 +10,7 @@ import Link from 'antd/es/typography/Link';
 import Search from 'antd/es/input/Search';
 import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../../components/wrappers/PageWrapper/PageWrapper';
+import UserService from '../../services/UserService';
 
 const columns = [
   {
@@ -104,29 +105,17 @@ const ProjectManagementView = () => {
 
   const fetchData = (page, pageSize, query = '') => {
     setLoading(true);
-    let url = `${serverUrl}/projects?page=${page}&limit=${pageSize}&search=${query}`;
+    let url = `/projects?page=${page}&limit=${pageSize}&search=${query}`;
     if (isCategoryArchived !== 'active') url += '&archived=true';
-    fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          "Accept": "application/json",
-        }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        setProjects(data.projects);
-        setTotalAmount(data.count);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    UserService.getProjects(url)
+    .then(data => {
+      setProjects(data.projects);
+      setTotalAmount(data.count);
+      setLoading(false);
+    })
+    .catch(error => {
+      console.log(error);
+    });
   };
 
   useEffect(() => {

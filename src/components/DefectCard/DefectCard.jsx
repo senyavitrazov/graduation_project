@@ -45,8 +45,9 @@ function transformLogsToItems(logs, currentLogin) {
         if (index === 0) {
             item.children = `${formattedDate} Defect was created`;
         } else if (log.text_of_comment) {
+          console.log('123:', log?.commenter?.credentials?.login);
             item.children =  (<>{formattedDate} {`Commented by user ${(log.commenter 
-              ? (log.commenter.credentials ? log.commenter.credentials.login : currentLogin)
+              ? (log?.commenter?.credentials?.login ? log.commenter.credentials.login : currentLogin)
               : 'developer')}`}<br/>
             {log.text_of_comment}</>);
             item.color = 'grey';
@@ -82,7 +83,7 @@ const DefectCard = ({onUpdate, withoutTimeline, modifiable = true, ...props}) =>
   const [textOfComment, setTextOfComment] = useState('');
   const [status, setStatus] = useState(defect.current_state.type_of_state);
   const cookies = new Cookies();
-  const currentLogin = cookies.get('userLogin');
+  const currentLogin = cookies.get('user').credentials.login;
 
   const fetchDefect = async (id) => {
     try {
@@ -190,9 +191,10 @@ const DefectCard = ({onUpdate, withoutTimeline, modifiable = true, ...props}) =>
   };
 
   const handleOk = async () => {
+    const current_user = cookies.get('user');
     sendCommentToServer(
       {
-        commenter: cookies.get('userId'),
+        commenter: current_user.id,
         text_of_comment: textOfComment,
         date: formatDate(Date.now()),
       }

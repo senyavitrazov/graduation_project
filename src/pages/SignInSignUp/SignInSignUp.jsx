@@ -1,16 +1,12 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PasswordInfoPopup } from "./PasswordInfoPopup/PasswordInfoPopup";
 import { useNavigate } from "react-router-dom";
 import RoundedButton from "../../components/RoundedButton/RoundedButton";
 import ErrorMessage from "../../components/errorMessage/errorMessage";
-import { GlobalContext } from '../../App';
 import Cookies from 'universal-cookie';
 import './SignInSignUp.scss';
-
-
-const expirationDate = new Date();
-expirationDate.setMonth(expirationDate.getMonth() + 1);
-
+import AuthService from "../../services/AuthService";
+import { API_URL } from "../../http";
 
 const SignInSingUp = props => {
   const [login, setLogin] = useState('');
@@ -21,7 +17,6 @@ const SignInSingUp = props => {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [isSignUpFieldsValid, setSignUpFieldsValid] = useState(false);
   const [error, setError] = useState(null);
-  const { serverUrl } = useContext(GlobalContext);
   const navigate = useNavigate();
   const cookies = new Cookies();
 
@@ -30,40 +25,52 @@ const SignInSingUp = props => {
     ? confirmPassword === inputValue
     : true;
 
+  
   useEffect(() => {
-    const userId = cookies.get('userId');
-    if (userId) {
+    if (cookies.get('isAuth')) {
       handleLogin();
     }
   }, []);
+
 
   useEffect(() =>  {
     isSignUpFieldsValid && setSignUpFieldsValid(false);
     error && setError(null); 
   }, [login, inputValue, confirmPassword, isSignUpMode]);
 
-  const handleLogin = () => {
+  const handleLogin = (response) => {
+    if (response) {
+      const expirationDate = new Date();
+      expirationDate.setMonth(expirationDate.getMonth() + 1);
+      localStorage.setItem('token', response.accessToken);
+      cookies.set('isAuth', true, { path: '/', expires: expirationDate });
+      cookies.set('user', response.user, { path: '/', expires: expirationDate });
+      cookies.set("refreshToken", response.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60 * 1000, path: '/',
+      })
+    }
     props.onLogin();
-    navigate('/');
+    navigate('/projects');
   };
   
   const loginButtonHandler = async () => {
     if (!isSignUpMode) {
       setError(null);
-      let profile = await window.contextBridgeApi?.invoke('duplex-profiles-channel', {
-        url: serverUrl,
-        action: 'search',
-        credentials: {
-          login,
-          password: inputValue,
-        },
-      });
-      if (profile instanceof Error) {
-        setError(profile)
-      } else {
-        console.log(profile);
-        cookies.set('userId', profile._id, { path: '/', expires: expirationDate });
-        handleLogin();
+
+      const credentials =  {
+        login,
+        password: inputValue,
+      };
+      
+      try {
+        const response = await AuthService.login({credentials});
+        if (response instanceof Error) {
+          setError(response);
+        } else {
+          handleLogin(response);
+        }
+      } catch (error) {
+        setError(error);
       }
     } else {
       setIsSignUpMode(!isSignUpMode);
@@ -73,25 +80,19 @@ const SignInSingUp = props => {
   const signUpButtonHandler = async () => {
     if (isSignUpMode) {
       if (isInputValid && isConfirmPasswordValid && login.length > 8) {
-        const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-        window.contextBridgeApi?.invoke('duplex-profiles-channel', {
-          url: serverUrl, 
-          action: 'export-profiles-append-array',
-          profilesData: [{
-            local_id: id,
-            credentials: {
-              login,
-              password: inputValue
-            },
-          }]
-        }).then((response) => {
-            cookies.set('userId', response[0]._id, { path: '/', expires: expirationDate });
-            cookies.set('userLogin', response[0].credentials.login, { path: '/', expires: expirationDate });
-            handleLogin()
-          })
-          .catch((err) => {
-            err && setError('Error: User with such login is already registered');
-          });
+        
+        const credentials =  {
+          login,
+          password: inputValue,
+        };
+
+        console.log(credentials);
+        try {
+          const response = await AuthService.registration({credentials})
+          handleLogin(response);
+        } catch(err) {
+          err && setError('Error: User with such login is already registered');
+        };
       } else { 
         setError(null);
         setSignUpFieldsValid(p => !p);
@@ -115,7 +116,7 @@ const SignInSingUp = props => {
     <form className="SignInForm__form">
       <input type="text" 
         onChange={(e) => setLogin(e.target.value)}
-        className={`form__input ${(login.length > 8 || !isSignUpMode) || (isSignUpMode  && login.length < 1) ? '' : 'wrong'}`} name="login"
+        className={`form__input ${(login.length > 8 || !isSignUpMode) || (isSignUpMode && login.length < 1) ? '' : 'wrong'}`} name="login"
         placeholder={isSignUpMode ? 'Login (at least 8 characters)' : 'Login'}/>
       <div className="SignInForm__passwordContainer">
         <input type="password"
