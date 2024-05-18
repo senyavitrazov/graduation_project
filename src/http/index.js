@@ -10,9 +10,11 @@ const fetchWithCredentials = (url, options = {}) => {
     },
     credentials: "include",
   })
-  .then((response) => response)
+  .then((response) => 
+    {
+      return response
+    })
   .catch((error) => {
-    console.error("Fetch error:", error);
     throw error;
   });
 };
@@ -27,16 +29,18 @@ const handleResponse = async (response, originalRequest) => {
       const data = await refreshResponse.json();
       localStorage.setItem("token", data.accessToken);
       repeatFlag = false;
-      return fetchWithCredentials(originalRequest.url, originalRequest.options);
+      const retryResponse = await fetchWithCredentials(originalRequest.url, originalRequest.options);
+      return $api.responseHandler(retryResponse, originalRequest);
     } else {
       repeatFlag = false;
       throw new Error("Not authorized");
     }
-  }
+  } 
   throw new Error(
     `Request failed with status ${response.status}`
   );
 };
+
 
 const $api = {
   get: (url, options = {}) => {
@@ -76,7 +80,8 @@ $api.responseHandler = async (response, originalRequest) => {
   if (!response.ok) {
     return handleResponse(response, originalRequest);
   }
-  return response.json();
+  const jsonData = await response.json(); // Изменено: Убедитесь, что возвращаемый результат это JSON-данные
+  return jsonData;
 };
 
 export default $api;

@@ -4,7 +4,7 @@ import PageContainer from '../../components/wrappers/PageContainer/PageContainer
 import PageHeader from '../../components/PageHeader/PageHeader';
 import Pagination from '../../components/Pagination/Pagination';
 import { GlobalContext } from '../../App';
-import { Progress, Table, Tag, Form, Radio, Button, Skeleton, Spin } from 'antd';
+import { Progress, Table, Tag, Form, Radio, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Link from 'antd/es/typography/Link';
 import Search from 'antd/es/input/Search';
@@ -100,24 +100,28 @@ const ProjectManagementView = () => {
   const [projects, setProjects] = useState([]);
   const [isCategoryArchived, setCategoryArchived] = useState('active');
   const { serverUrl } = useContext(GlobalContext);
-   const navigate = useNavigate();
-  const sizeOfPage = 12; 
+  const navigate = useNavigate();
+  const sizeOfPage = 12;
 
-  const fetchData = (page, pageSize, query = '') => {
+  const fetchData = async (page, pageSize, query = '') => {
     setLoading(true);
     let url = `/projects?page=${page}&limit=${pageSize}&search=${query}`;
     if (isCategoryArchived !== 'active') url += '&archived=true';
-    UserService.getProjects(url)
-    .then(data => {
+    try {
+      const data = await UserService.getProjects(url);
       setProjects(data.projects || []);
       setTotalAmount(data.count || 0);
       setLoading(false);
-    })
-    .catch(error => {
-      setProjects([]);
-      setTotalAmount(0);
+    } catch (error) {
       console.log(error);
-    });
+      if (error.message === 'Not authorized') {
+        message.error('Authorization failed. Please log in again.');
+      } else {
+        message.error('Failed to fetch projects.');
+        console.error('Fetch error:', error);
+      }
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

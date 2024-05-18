@@ -62,8 +62,8 @@ function App() {
     AuthService.logout();
     cookies.remove('user', { path: '/' });
     cookies.remove('isAuth', { path: '/' });
-    cookies.remove('token', { path: '/' });
-    sessionStorage.setItem('current_page_of_nav', 'projects');
+    localStorage.removeItem('token');
+    sessionStorage.setItem('current_page_of_nav', 'defects');
     navigate('/login');
   };
 
