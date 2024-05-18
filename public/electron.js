@@ -30,6 +30,14 @@ async function createWindow() {
   );
 }
 
+app.on(
+  "certificate-error",
+  (event, webContents, url, error, certificate, callback) => {
+    event.preventDefault();
+    callback(true);
+  }
+);
+
 app.on('ready', () => {
   defaultSession  = session.defaultSession;
   createWindow();

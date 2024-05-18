@@ -40,11 +40,13 @@ const DefectManagmentView = () => {
     if (severity) url += `&severity=${severity}`;
     UserService.getDefects(url)
     .then(data => {
-      setDefects(data.defects);
-      setTotalAmount(data.count);
+      setDefects(data.defects || []);
+      setTotalAmount(data.count || 0);
       setLoading(false);
     })
     .catch(error => {
+      setDefects([]);
+      setTotalAmount(0);
       console.log(error);
     });
   };

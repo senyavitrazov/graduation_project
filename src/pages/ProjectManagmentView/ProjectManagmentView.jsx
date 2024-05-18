@@ -4,7 +4,7 @@ import PageContainer from '../../components/wrappers/PageContainer/PageContainer
 import PageHeader from '../../components/PageHeader/PageHeader';
 import Pagination from '../../components/Pagination/Pagination';
 import { GlobalContext } from '../../App';
-import { Progress, Table, Tag, Form, Radio, Button } from 'antd';
+import { Progress, Table, Tag, Form, Radio, Button, Skeleton, Spin } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Link from 'antd/es/typography/Link';
 import Search from 'antd/es/input/Search';
@@ -109,11 +109,13 @@ const ProjectManagementView = () => {
     if (isCategoryArchived !== 'active') url += '&archived=true';
     UserService.getProjects(url)
     .then(data => {
-      setProjects(data.projects);
-      setTotalAmount(data.count);
+      setProjects(data.projects || []);
+      setTotalAmount(data.count || 0);
       setLoading(false);
     })
     .catch(error => {
+      setProjects([]);
+      setTotalAmount(0);
       console.log(error);
     });
   };

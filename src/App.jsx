@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect } from "react";
 import Header from "./components/header/header";
 import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import SignInSignUp from "./pages/SignInSignUp/SignInSignUp.jsx";
@@ -12,42 +12,42 @@ import { API_URL } from "./http/index.js";
 export const GlobalContext = createContext();
 
 function App() {
-  const [isLoggedIn, setLoggedIn] = useState(false);
-  const serverUrl = 'http://localhost:5555';
+  const serverUrl = API_URL;
   const cookies = new Cookies();
   const devMode = false;
   const navigate = useNavigate();
 
   const PrivateWrapper = ({ ...rest }) => {
-    return (cookies.get('isAuth') || isLoggedIn || devMode) 
+    return (cookies.get('isAuth') || devMode) 
       ? <Outlet /> 
       : <Navigate to="/login" />;
   };
 
+  
+  
   async function checkAuth() {
     try {
-        const response = await fetch(`${API_URL}/refresh`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
+      const response = await fetch(`${API_URL}/refresh`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+      });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-        const data = await response.json();
-        const expirationDate = new Date();
-        expirationDate.setMonth(expirationDate.getMonth() + 1);
+      const data = await response.json();
+      const expirationDate = new Date();
+      expirationDate.setMonth(expirationDate.getMonth() + 1);
 
-        localStorage.setItem('token', data.accessToken);
-        cookies.set('isAuth', true, { path: '/', expires: expirationDate });
-        cookies.set('user', JSON.stringify(data.user), { path: '/', expires: expirationDate });
+      localStorage.setItem('token', data.accessToken);
+      cookies.set('isAuth', true, { path: '/', expires: expirationDate });
+      cookies.set('user', JSON.stringify(data.user), { path: '/', expires: expirationDate });
     } catch (e) {
-        console.log(new Date());
-        console.log(e.message);
+      console.log(e.message);
     }
   }
 
@@ -59,12 +59,11 @@ function App() {
   }, [])
 
   const handleLogout = () => {
-    setLoggedIn(false);
     AuthService.logout();
     cookies.remove('user', { path: '/' });
     cookies.remove('isAuth', { path: '/' });
     cookies.remove('token', { path: '/' });
-    cookies.remove('refreshToken', { path: '/' });
+    sessionStorage.setItem('current_page_of_nav', 'projects');
     navigate('/login');
   };
 
@@ -93,7 +92,7 @@ function App() {
         <div className="App">
           <Header/>
             <Routes>
-              <Route path="/login" element={<SignInSignUp onLogin={() => setLoggedIn(true)} />} />
+              <Route path="/login" element={<SignInSignUp />} />
               <Route element={<PrivateWrapper />}>
                 <Route path="/*" element={<MainView key={'mainview'} onLogOut={handleLogout}/>} />
               </Route>

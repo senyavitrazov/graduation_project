@@ -1,4 +1,4 @@
-export const API_URL = `http://localhost:5555`;
+export const API_URL = `https://localhost:5555`;
 
 const fetchWithCredentials = (url, options = {}) => {
   const { headers = {}, ...restOptions } = options;
@@ -10,44 +10,60 @@ const fetchWithCredentials = (url, options = {}) => {
     },
     credentials: "include",
   })
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  })
+  .then((response) => response)
   .catch((error) => {
     console.error("Fetch error:", error);
     throw error;
   });
 };
 
-const handleResponse = async (response) => {
-  if (response.status === 401) {
+let repeatFlag = false;
+
+const handleResponse = async (response, originalRequest) => {
+  if (response.status === 401 && !repeatFlag) {
+    repeatFlag = true;
     const refreshResponse = await fetchWithCredentials(`${API_URL}/refresh`);
     if (refreshResponse.ok) {
       const data = await refreshResponse.json();
       localStorage.setItem("token", data.accessToken);
-      return true;
+      repeatFlag = false;
+      return fetchWithCredentials(originalRequest.url, originalRequest.options);
     } else {
+      repeatFlag = false;
       throw new Error("Not authorized");
     }
   }
-  throw new Error(`Request failed with status ${response.status}`);
+  throw new Error(
+    `Request failed with status ${response.status}`
+  );
 };
 
 const $api = {
-  get: (url, options = {}) => fetchWithCredentials(`${API_URL}${url}`, options),
-  post: (url, data, options = {}) =>
-    fetchWithCredentials(`${API_URL}${url}`, {
-      ...options,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
+  get: (url, options = {}) => {
+    const requestOptions = { url: `${API_URL}${url}`, options };
+    return fetchWithCredentials(
+      requestOptions.url,
+      requestOptions.options
+    ).then((response) => $api.responseHandler(response, requestOptions));
+  },
+  post: (url, data, options = {}) => {
+    const requestOptions = {
+      url: `${API_URL}${url}`,
+      options: {
+        ...options,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...options.headers,
+        },
+        body: JSON.stringify(data),
       },
-      body: JSON.stringify(data),
-    }),
+    };
+    return fetchWithCredentials(
+      requestOptions.url,
+      requestOptions.options
+    ).then((response) => $api.responseHandler(response, requestOptions));
+  },
 };
 
 $api.interceptors = {
@@ -56,11 +72,11 @@ $api.interceptors = {
   },
 };
 
-$api.responseHandler = async (response) => {
+$api.responseHandler = async (response, originalRequest) => {
   if (!response.ok) {
-    await handleResponse(response);
+    return handleResponse(response, originalRequest);
   }
-  return response;
+  return response.json();
 };
 
 export default $api;

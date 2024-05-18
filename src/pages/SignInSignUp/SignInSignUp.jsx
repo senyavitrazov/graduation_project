@@ -6,7 +6,6 @@ import ErrorMessage from "../../components/errorMessage/errorMessage";
 import Cookies from 'universal-cookie';
 import './SignInSignUp.scss';
 import AuthService from "../../services/AuthService";
-import { API_URL } from "../../http";
 
 const SignInSingUp = props => {
   const [login, setLogin] = useState('');
@@ -42,15 +41,10 @@ const SignInSingUp = props => {
     if (response) {
       const expirationDate = new Date();
       expirationDate.setMonth(expirationDate.getMonth() + 1);
-      localStorage.setItem('token', response.accessToken);
       cookies.set('isAuth', true, { path: '/', expires: expirationDate });
       cookies.set('user', response.user, { path: '/', expires: expirationDate });
-      cookies.set("refreshToken", response.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000, path: '/',
-      })
     }
-    props.onLogin();
-    navigate('/projects');
+    navigate('/');
   };
   
   const loginButtonHandler = async () => {
@@ -64,14 +58,9 @@ const SignInSingUp = props => {
       
       try {
         const response = await AuthService.login({credentials});
-        if (response instanceof Error) {
-          setError(response);
-        } else {
-          handleLogin(response);
-        }
+        handleLogin(response);
       } catch (error) {
-        setError(error);
-        console.log(error);
+        setError('Invalid credentials');
       }
     } else {
       setIsSignUpMode(!isSignUpMode);
@@ -87,7 +76,6 @@ const SignInSingUp = props => {
           password: inputValue,
         };
 
-        console.log(credentials);
         try {
           const response = await AuthService.registration({credentials})
           handleLogin(response);

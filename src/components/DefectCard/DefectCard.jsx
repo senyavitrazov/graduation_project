@@ -45,7 +45,6 @@ function transformLogsToItems(logs, currentLogin) {
         if (index === 0) {
             item.children = `${formattedDate} Defect was created`;
         } else if (log.text_of_comment) {
-          console.log('123:', log?.commenter?.credentials?.login);
             item.children =  (<>{formattedDate} {`Commented by user ${(log.commenter 
               ? (log?.commenter?.credentials?.login ? log.commenter.credentials.login : currentLogin)
               : 'developer')}`}<br/>
@@ -161,7 +160,6 @@ const DefectCard = ({onUpdate, withoutTimeline, modifiable = true, ...props}) =>
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        console.log('Status updated successfully on: ', status);
         fetchDefect();
       } catch (error) {
         console.error('Error updating status:', error);

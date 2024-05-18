@@ -36,16 +36,16 @@ const ProjectDefectsList = ({project, loading, ...props}) => {
   };
 
   const updateDefect = (updatedDefect) => {
-    setDefects(defects.map(defect =>
+    const updatedDefects = defects.map(defect =>
       defect._id === updatedDefect._id ? updatedDefect : defect
-    ));
+    );
+    setDefects(updatedDefects);
 
-    const activeDefectsList = defects.filter(defect => defect.current_state.type_of_state !== 'archived');
-    const archivedDefectsList = defects.filter(defect => defect.current_state.type_of_state === 'archived');
+    const activeDefectsList = updatedDefects.filter(defect => defect.current_state.type_of_state !== 'archived');
+    const archivedDefectsList = updatedDefects.filter(defect => defect.current_state.type_of_state === 'archived');
   
     setActiveDefects(activeDefectsList);
     setArchivedDefects(archivedDefectsList);
-
   };
 
   return(
@@ -82,7 +82,7 @@ const ProjectDefectsList = ({project, loading, ...props}) => {
             loading ? (
               <Spin className={styles['spiner']} indicator={<LoadingOutlined spin />} />
             ) : (
-              activeDefects.map((e, i) => (<DefectCard key={i} defect={e} onUpdate={updateDefect}/>))
+              activeDefects.map((e, i) => (<DefectCard key={e._id} defect={e} onUpdate={updateDefect}/>))
             )
           )}
         </div>
@@ -99,7 +99,7 @@ const ProjectDefectsList = ({project, loading, ...props}) => {
             loading ? (
               <Spin className={styles['spiner']} indicator={<LoadingOutlined spin />} />
             ) : (
-              archivedDefects.map((e, i) => (<DefectCard key={i} defect={e} onUpdate={updateDefect}/>))
+              archivedDefects.map((e, i) => (<DefectCard key={e._id} defect={e} onUpdate={updateDefect}/>))
             )
           )}
         </div>
