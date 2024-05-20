@@ -113,14 +113,11 @@ const ProjectManagementView = () => {
       setTotalAmount(data.count || 0);
       setLoading(false);
     } catch (error) {
-      console.log(error);
       if (error.message === 'Not authorized') {
         message.error('Authorization failed. Please log in again.');
       } else {
         message.error('Failed to fetch projects.');
-        console.error('Fetch error:', error);
       }
-      setLoading(false);
     }
   };
 

@@ -16,7 +16,7 @@ async function createWindow() {
     height: 1080,
     resizable: true,
     titleBarOverlay: true,
-    title: 'trackING sOftware defecTs syStem (СОДПП/INGOTS)',
+    title: "Tracking Software Defects System_v2.1",
     frame: false,
     webPreferences: {
       nodeIntegration: true,

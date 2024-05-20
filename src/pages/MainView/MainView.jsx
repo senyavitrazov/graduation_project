@@ -8,6 +8,7 @@ import styles from './MainView.module.scss';
 import ProjectPage from '../ProjectPage/ProjectPage';
 import AboutPage from '../AboutPage/AboutPage';
 import EditDefectPage from '../EditDefectPage/EditDefectPage';
+import NotFound from '../NotFound/NotFound';
 
 const items = [
   {
@@ -45,6 +46,7 @@ const MainView = ({onLogOut, ...props}) => {
         <Route key={'project'} path="projects/:id/*" element={<ProjectPage/>} />
         <Route key={'about-page'} path="about" element={<AboutPage/>} />
         <Route key={'projects-add-defect'} path="defects/:id/edit" element={<EditDefectPage/>}/>
+        <Route path="*" element={<NotFound/>} />
       </Routes>
     </div>
   );

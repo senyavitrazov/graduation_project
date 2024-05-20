@@ -13,7 +13,17 @@
     flex-grow: 1;
     -webkit-user-select: none;
     -webkit-app-region: drag;
+    display: flex;
+    align-items: center;
+    p {
+      font-size: 12px;
+    }
   }
+}
+
+.logo {
+  margin: 6px 6px;
+  height: 60%;
 }
 
 .buttons {

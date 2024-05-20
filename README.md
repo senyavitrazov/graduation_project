@@ -1,2 +1,2 @@
-INGOTS: trackING sOftware defecTs syStem
+TSDS: Tracking Software Defects System
 СОДПП: Система Отслеживания Деффектов Программных Продуктов

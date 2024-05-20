@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './DefectManagmentView.module.scss';
 import { useContext, useEffect, useState } from 'react';
-import { Form, Select, Table } from 'antd';
+import { Form, Select, Table, message } from 'antd';
 import { GlobalContext } from '../../App';
 import PageContainer from '../../components/wrappers/PageContainer/PageContainer';
 import PageHeader from '../../components/PageHeader/PageHeader';
@@ -40,7 +40,7 @@ const DefectManagmentView = () => {
     if (severity) url += `&severity=${severity}`;
     UserService.getDefects(url)
     .then(data => {
-      if (data && typeof data === 'object') { // Добавлено: проверка типа данных
+      if (data && typeof data === 'object') {
         setDefects(data.defects || []);
         setTotalAmount(data.count || 0);
       } else {
@@ -50,9 +50,11 @@ const DefectManagmentView = () => {
       setLoading(false);
     })
     .catch(error => {
-      setDefects([]);
-      setTotalAmount(0);
-      setLoading(false);
+      if (error.message === 'Not authorized') {
+        message.error('Authorization failed. Please log in again.');
+      } else {
+        message.error('Failed to fetch projects.');
+      }
     });
   };
 

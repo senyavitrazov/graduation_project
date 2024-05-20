@@ -1,6 +1,7 @@
 import React from 'react';
 import style from './header.module.scss';
 import winMax from '../../assets/window_maximize.png';
+import logo from '../../assets/svg/logo.svg';
 
 const Header = () => {
   function sendToMain(message) {
@@ -8,7 +9,9 @@ const Header = () => {
   };
 
   return <header className={style.header}>
-    <div className={style.title}></div>
+    <div className={style.title}><img src={logo} alt='logo'className={style.logo}/>
+      <p>Tracking Software Defects System_v2.1</p>
+    </div>
     <div className={style.buttons}>
       <div className={style.min} onClick={sendToMain.bind(null, 'minimize')}>&#8722;</div>
       <div className={style.max} onClick={sendToMain.bind(null, 'maximize')}>
